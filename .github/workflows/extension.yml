@@ -26,7 +26,9 @@ jobs:
       - name: Manifest facts
         run: node -e "const m=require('./extension/manifest.json');if(m.manifest_version!==3)process.exit(1);console.log('MV'+m.manifest_version,'v'+m.version,'Chrome >=',m.minimum_chrome_version,'permissions:',m.permissions.join(','))"
   e2e-chromium:
-    runs-on: ubuntu-latest
+    # Pinned: Playwright ships browser dependencies per Ubuntu release, and
+    # ubuntu-latest can move to a release Playwright does not support yet.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7

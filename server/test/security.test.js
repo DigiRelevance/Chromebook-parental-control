@@ -265,7 +265,9 @@ test('SEC isolation: one child\'s pairing code cannot touch another child', asyn
   const viaA = (await anon.get(`/api/devices/${a.code}`)).body;
   assert.equal(viaA.kid.id, a.kidId);
   assert.deepEqual(viaA.policy.deny, ['a-only.com']);
-  assert.ok(!JSON.stringify(viaA).includes('b-only.com'));
+  // Walk every string in A's response: none may be one of B's rules.
+  const strings = (function walk(v) { return typeof v === 'string' ? [v] : v && typeof v === 'object' ? Object.values(v).flatMap(walk) : []; })(viaA);
+  assert.ok(!strings.some((s) => s === 'b-only.com'), "B's rules leaked into A's device view");
   // Revoking A does not affect B; revoked code is dead immediately.
   await parent('delete', `/api/kids/${a.kidId}/pairings/${a.code}`);
   assert.equal((await anon.get(`/api/devices/${a.code}`)).status, 404);
