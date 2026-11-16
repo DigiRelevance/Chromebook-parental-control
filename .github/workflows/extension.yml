@@ -6,14 +6,17 @@ on:
   push:
     branches: ["**"]
   pull_request:
+concurrency:
+  group: extension-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
   manifest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 22
           cache: npm
@@ -23,10 +26,12 @@ jobs:
       - name: Manifest facts
         run: node -e "const m=require('./extension/manifest.json');if(m.manifest_version!==3)process.exit(1);console.log('MV'+m.manifest_version,'v'+m.version,'Chrome >=',m.minimum_chrome_version,'permissions:',m.permissions.join(','))"
   e2e-chromium:
-    runs-on: ubuntu-latest
+    # Pinned: Playwright ships browser dependencies per Ubuntu release, and
+    # ubuntu-latest can move to a release Playwright does not support yet.
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 22
           cache: npm
@@ -40,7 +45,7 @@ jobs:
         run: npm run e2e:web
       - name: Upload failure diagnostics
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: e2e-artifacts
           path: e2e-artifacts/

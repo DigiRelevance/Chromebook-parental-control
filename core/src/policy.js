@@ -73,7 +73,7 @@ export function decide(policy, urlOrHost, opts = {}) {
   }
 
   // 2) Scheduled off days (holidays, exam days, "Saturday is TV day").
-  if (policy.offDays && policy.offDays.length && isOffDay(clock.date, policy.offDays)) {
+  if (Array.isArray(policy.offDays) && policy.offDays.length && isOffDay(clock.date, policy.offDays)) {
     return { allowed: false, code: 'off-day', reason: 'Today is a scheduled break — no internet.', host };
   }
 
@@ -101,8 +101,10 @@ export function decide(policy, urlOrHost, opts = {}) {
     }
   }
 
-  // 5) Site veto — always wins, in any mode.
-  const deny = policy.deny || [];
+  // 5) Site veto — always wins, in any mode. Non-array fields are treated as
+  //    empty so a malformed policy can never throw (a thrown decide() would be
+  //    a fail-open path for callers that catch and continue).
+  const deny = Array.isArray(policy.deny) ? policy.deny : [];
   if (deny.some((p) => ruleMatchesHost(p, host))) {
     return { allowed: false, code: 'site-denied', reason: 'This site is blocked for this child.', host };
   }
@@ -126,7 +128,7 @@ export function decide(policy, urlOrHost, opts = {}) {
   // 7) Allowlist mode: must be explicitly on the allow list.
   const mode = policy.mode || 'unrestricted';
   if (mode === 'allowlist') {
-    const allow = policy.allow || [];
+    const allow = Array.isArray(policy.allow) ? policy.allow : [];
     if (!allow.some((p) => ruleMatchesHost(p, host))) {
       return { allowed: false, code: 'not-allowed', reason: 'This site is not in the approved list.', host };
     }
@@ -149,4 +151,32 @@ export function remainingDaily(policy = {}) {
 /** Convenience: is the master switch on? (treats missing as on) */
 export function internetOn(policy = {}) {
   return policy.internetAllowed !== false;
+}
+
+/**
+ * Fold not-yet-reported local usage into an effective policy so budgets keep
+ * counting while the device is offline. `pending` is {hostname: seconds}.
+ * Pure: returns a new policy; the input is not mutated. Used by the extension
+ * between successful flushes; the server never sees this intermediate state.
+ */
+export function applyPendingUsage(policy, pending) {
+  if (!policy || typeof policy !== 'object') return policy;
+  if (!pending || typeof pending !== 'object') return { ...policy };
+  const hosts = Object.entries(pending)
+    .map(([h, sec]) => [String(h).toLowerCase(), Number(sec)])
+    .filter(([h, sec]) => h && Number.isFinite(sec) && sec > 0);
+  const p = { ...policy };
+  if (!hosts.length) return p;
+  const totalMin = hosts.reduce((a, [, sec]) => a + sec, 0) / 60;
+  p.usageToday = (Number(p.usageToday) || 0) + totalMin;
+  if (Array.isArray(p.siteBudgets)) {
+    p.siteBudgets = p.siteBudgets.map((sb) => {
+      if (!sb || typeof sb !== 'object' || typeof sb.pattern !== 'string') return sb;
+      const extra = hosts
+        .filter(([h]) => ruleMatchesHost(sb.pattern, h))
+        .reduce((a, [, sec]) => a + sec, 0) / 60;
+      return extra ? { ...sb, used: (Number(sb.used) || 0) + extra } : { ...sb };
+    });
+  }
+  return p;
 }
