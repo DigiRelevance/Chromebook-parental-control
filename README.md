@@ -182,12 +182,13 @@ version) are regenerated on the `badges` branch after each green run on `main`.
 
 | Workflow | Jobs (these are the check names) | What it proves |
 | -------- | -------------------------------- | -------------- |
-| **Tests** (`ci.yml`) | `lint`, `test (22)`, `test (24)`, `docker`, `badges` (main only) | ESLint; 74 unit + integration tests on Node 22 and 24 with coverage thresholds (95% lines, 80% branches, 95% functions); console and extension builds; committed extension bundle is current; Docker image builds, starts, prints a setup code and answers `/api/health` |
+| **Tests** (`ci.yml`) | `lint`, `test (22)`, `test (24)`, `docker`, `badges` (main only) | ESLint; 114 unit, integration and security tests on Node 22 and 24 with coverage thresholds (95% lines, 80% branches, 95% functions); console and extension builds; committed extension bundle is current; Docker image builds, starts, prints a setup code and answers `/api/health` |
 | **Security** (`security.yml`) | `audit`, `codeql`, `secrets`, `dependency-review` | `npm audit` fails on any runtime advisory and `npm audit signatures` verifies registry signatures and provenance; CodeQL security-and-quality analysis; TruffleHog scans the whole history for verified secrets; on PRs, dependency review blocks new vulnerable or GPL/AGPL dependencies; also weekly |
 | **Security tests** (`security-tests.yml`) | `security-tests` | The adversarial suite (`npm run test:security`): authentication bypass attempts, injection and prototype pollution, information leaks, cross-child isolation, DoS limits, path traversal, rule-engine fail-closed and regex-safety invariants, and repository tripwires (manifest permissions, no phone-home, pinned actions, hardened container, dependency surface); also weekly |
 | **Scorecard** (`scorecard.yml`) | `scorecard` | OpenSSF Scorecard: independent score of supply-chain practice (pinned dependencies, token permissions, SAST, branch protection, vulnerabilities), published to scorecard.dev and the Security tab |
 | **Extension** (`extension.yml`) | `manifest`, `e2e-chromium` | Manifest V3 sanity, no inline scripts; the extension **and** the console driven end to end in a real Chromium, with screenshots and logs uploaded on failure |
 | **Publish** (`publish.yml`) | `image`, `extension` | multi-arch image to `ghcr.io/marfleetn/chromebook-parental-control` on `main`; extension zip on `v*` releases |
+| **Dependabot auto-merge** (`dependabot-automerge.yml`) | `enable-auto-merge` | On Dependabot PRs only: turns on GitHub auto-merge for patch and minor updates, so they merge themselves once the ruleset's required checks are green; major updates wait for a human |
 
 Run the same gate locally before pushing: `npm run ci` (plus `npm run e2e:ext`
 and `npm run e2e:web` if you have Playwright). `npm run test:security` runs the
@@ -209,6 +210,9 @@ same gate.
 
 Dependabot (`.github/dependabot.yml`) opens weekly PRs for npm (React pair and
 dev toolchain grouped), GitHub Actions (grouped) and the base image (LTS only).
+Patch and minor updates merge themselves once every required check passes
+(`dependabot-automerge.yml`; needs *Settings → General → Pull Requests → Allow
+auto-merge*). Major updates, and anything whose checks fail, wait for review.
 `.github/pull_request_template.md` gives every PR the same test and security
 checklist.
 

@@ -1,0 +1,35 @@
+name: Dependabot auto-merge
+# Lets GitHub merge Dependabot's patch and minor updates by itself once every
+# check required by the main branch ruleset is green. Major updates are left
+# for a human: they can change behaviour and are not always covered by CI
+# (for example the Docker publish actions only run on main).
+#
+# This workflow does not merge anything directly. It only turns on GitHub's
+# auto-merge for the pull request; the ruleset decides when the merge happens.
+# Requires Settings → General → Pull Requests → "Allow auto-merge" to be on.
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  enable:
+    name: enable-auto-merge
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'marfleetn/Chromebook-parental-control'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - id: meta
+        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2.5.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Enable auto-merge for patch and minor updates
+        if: steps.meta.outputs.update-type == 'version-update:semver-patch' || steps.meta.outputs.update-type == 'version-update:semver-minor'
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Major update left for review
+        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+        run: echo "::notice::Major version update - not auto-merged, review and merge by hand."
