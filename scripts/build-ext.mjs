@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * CHPC extension build — bundles @chpc/core into extension/vendor/core.js (ESM,
+ * SCOUT extension build — bundles @chpc/core into extension/vendor/core.js (ESM,
  * importable by the MV3 service worker) and sanity-checks the manifest.
  *
  *   node scripts/build-ext.mjs

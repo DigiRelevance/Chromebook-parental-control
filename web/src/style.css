@@ -1,4 +1,4 @@
-/* CHPC console — paper / ink / brass. Light-first, 2–3px corners. */
+/* SCOUT console — paper / ink / brass (see brand/BRAND.md). Light-first, 2–3px corners. */
 :root {
   --paper: #f7f4ee;
   --paper-2: #efeadd;
@@ -39,13 +39,8 @@ code, .mono { font-family: "IBM Plex Mono", ui-monospace, "SF Mono", monospace; 
   border-bottom: 1px solid var(--line);
 }
 .brand { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; cursor: pointer; font-size: 1rem; color: var(--ink); }
-.brand-mark {
-  width: 30px; height: 30px; border-radius: 3px;
-  background: var(--brass); color: #fff; font-weight: 700;
-  display: grid; place-items: center; font-size: .8rem; letter-spacing: .04em;
-  font-family: "IBM Plex Mono", monospace;
-}
-.brand-name { font-weight: 600; }
+.brand-mark { display: block; flex: 0 0 auto; }
+.brand-name { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: 1.08rem; letter-spacing: .01em; }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
 .health { font-size: .78rem; padding: 3px 9px; border-radius: 3px; border: 1px solid var(--line); font-family: "IBM Plex Mono", monospace; }
 .health.ok { color: var(--ok); border-color: var(--ok); }

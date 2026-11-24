@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# CHPC — self-hosted parental control for family Chromebooks.
+# SCOUT — Self-hosted ChromeOS Oversight & Usage Tracker for the family.
 # Multi-stage: build the web console, then a slim runtime image that runs the
 # Express API and serves the console. Runs as a non-root user.
 #

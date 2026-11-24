@@ -1,4 +1,4 @@
-# CHPC — Security, Compliance and Code-Hygiene Report
+# SCOUT — Security, Compliance and Code-Hygiene Report
 
 *Review date: 2026-09-20 · Scope: whole repository at commit `c1634f0` ("CHPC: core policy
 engine, Express API, React console, Chrome MV3 extension, Docker, docs") · Outcome:
@@ -88,7 +88,7 @@ weakens a control; **Low** = hygiene.
   device stops being managed within a minute without touching it.
 - Server exits with a plain-English reason on unsafe configuration.
 
-## 6. Residual risks (accepted or out of scope) — read before relying on CHPC
+## 6. Residual risks (accepted or out of scope) — read before relying on SCOUT
 
 | Risk | Why it remains | Mitigation |
 | ---- | -------------- | ---------- |

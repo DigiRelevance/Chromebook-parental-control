@@ -1,4 +1,4 @@
-# CHPC — run at home with the prebuilt image (no build step):
+# SCOUT — run at home with the prebuilt image (no build step):
 #   docker compose up -d
 #   docker compose logs chpc        # shows the one-time SETUP CODE on first run
 # Console + API: http://<host>:4100  → open it, enter the setup code, choose your PIN.

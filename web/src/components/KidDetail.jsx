@@ -319,7 +319,7 @@ function DevicesTab({ kidId, onChanged }) {
       <div className="card">
         <h3>Paired Chromebooks</h3>
         {list.length === 0 ? (
-          <p style={{ color: "var(--ink-soft)" }}>No Chromebooks paired yet. Generate a pairing code below, then type it into the CHPC extension on the child&apos;s Chromebook.</p>
+          <p style={{ color: "var(--ink-soft)" }}>No Chromebooks paired yet. Generate a pairing code below, then type it into the SCOUT extension on the child&apos;s Chromebook.</p>
         ) : (
           <ul className="site-list">
             {list.map((d) => (
@@ -341,7 +341,7 @@ function DevicesTab({ kidId, onChanged }) {
         <h3>Pair a new Chromebook</h3>
         <ol style={{ fontSize: ".9rem", color: "var(--ink-soft)", paddingLeft: 20, marginTop: 0 }}>
           <li>Give the device a name and click <strong>Generate code</strong>.</li>
-          <li>On the Chromebook, open the CHPC extension, enter this console&apos;s address and the code.</li>
+          <li>On the Chromebook, open the SCOUT extension, enter this console&apos;s address and the code.</li>
           <li>The code is that device&apos;s key — anyone who has it can read this child&apos;s rules. Unpair to revoke it.</li>
         </ol>
         <div className="row" style={{ marginTop: 8 }}>

@@ -1,5 +1,5 @@
 /**
- * CHPC Family — MV3 service worker (ES module).
+ * SCOUT — MV3 service worker (ES module).
  *
  * Responsibilities
  *  1. Pairing state lives in chrome.storage.local (written by popup.js).

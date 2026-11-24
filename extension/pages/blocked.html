@@ -9,8 +9,10 @@
     --paper: #f7f4ee;
     --paper-2: #efeadd;
     --ink: #22201c;
-    --ink-soft: #6b655b;
-    --brass: #a07c2c;
+    --ink-soft: #5c574d;
+    --brass: #8a6d2f;
+    --line: #d9d2c2;
+    --card: #fffdf9;
     --corner: 3px;
   }
   html, body { margin: 0; min-height: 100%; }
@@ -24,18 +26,19 @@
     padding: 24px;
   }
   main { max-width: 460px; width: 100%; }
+  .illustration { display: block; width: 100%; max-width: 300px; height: auto; margin: 0 0 14px -8px; }
   .kicker {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--brass);
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
   }
-  h1 { font-size: 24px; font-weight: 600; margin: 6px 0 10px; }
+  h1 { font-family: "Newsreader", Georgia, serif; font-size: 26px; font-weight: 500; margin: 6px 0 10px; }
   p { color: var(--ink-soft); margin: 0 0 18px; }
   .card {
-    background: var(--paper-2);
-    border: 1px solid #e3ddd0;
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: var(--corner);
     padding: 14px 16px;
     font-size: 13px;
@@ -53,7 +56,22 @@
 </head>
 <body>
   <main>
-    <div class="kicker">Family policy</div>
+    <svg class="illustration" viewBox="0 0 460 320" role="img" aria-label="The clock mark at night under a crescent moon">
+  <path d="M372 58a34 34 0 1 0 22 50a27 27 0 0 1-22-50z" fill="#b79a55"/>
+  <circle cx="96" cy="84" r="4" fill="#b79a55"/>
+  <circle cx="150" cy="44" r="3" fill="#b79a55"/>
+  <circle cx="312" cy="40" r="3" fill="#b79a55"/>
+  <circle cx="64" cy="150" r="3" fill="#b79a55"/>
+  <g transform="translate(143.6 83.4) scale(1.8)">
+    <path fill-rule="evenodd" d="M48 4a44 44 0 1 0 0 88a44 44 0 1 0 0-88zM55 41V11.67A37 37 0 0 1 84.33 41z" fill="#8a6d2f"/>
+    <path d="M45 14h6v34h-6zM48 45h26v6H48z" fill="#f7f4ee"/>
+    <circle cx="48" cy="48" r="7" fill="#f7f4ee"/>
+    <circle cx="48" cy="48" r="2.5" fill="#8a6d2f"/>
+  </g>
+  <path d="M36 249.5h388" stroke="#d9d2c2" stroke-width="3" fill="none"/>
+  <path d="M60 266h120M210 266h60M300 266h100" stroke="#d9d2c2" stroke-width="3" fill="none"/>
+</svg>
+    <div class="kicker">SCOUT</div>
     <h1 id="title">This site&#8217;s not allowed right now</h1>
     <p id="lede">The family rules block this destination. If you&#8217;re a parent, check
        the console for the current rules.</p>
@@ -63,7 +81,7 @@
       <div class="row"><span class="k">Time</span>    <span class="v" id="when">&#8212;</span></div>
     </div>
     <div class="actions"><button id="back">Go back</button></div>
-    <footer>CHPC Family &middot; self-hosted</footer>
+    <footer>SCOUT &middot; your family's rules, kept at home</footer>
   </main>
   <script src="blocked.js"></script>
 </body>

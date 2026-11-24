@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import Mark from "./components/Mark.jsx";
 import { api, pinStore, onUnauthorized } from "./api.js";
 import KidList from "./components/KidList.jsx";
 import KidDetail from "./components/KidDetail.jsx";
@@ -97,8 +98,8 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <button className="brand" onClick={() => go("/")}>
-          <span className="brand-mark">CH</span>
-          <span className="brand-name">CHPC · Parent Console</span>
+          <Mark />
+          <span className="brand-name">SCOUT · Parent console</span>
         </button>
         <div className="topbar-right">
           <span className={"health" + (health ? " ok" : " bad")} title={health ? "API reachable" : "server unreachable"}>
@@ -137,7 +138,7 @@ export default function App() {
       )}
 
       <footer className="foot">
-        CHPC — self-hosted Chromebook parental control. Decisions are made by <code>@chpc/core</code>; this console edits policy and shows usage.
+        SCOUT — Self-hosted ChromeOS Oversight &amp; Usage Tracker. Your rules, kept at home. Decisions are made by <code>@chpc/core</code>; this console edits policy and shows usage.
       </footer>
     </div>
   );

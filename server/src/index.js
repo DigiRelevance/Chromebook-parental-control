@@ -16,20 +16,20 @@ const envPin = env.CHPC_GUARDIAN_PIN || '';
 if (envPin) {
   const problem = pinProblem(envPin);
   if (problem) {
-    console.error(`[chpc-server] refusing to start: CHPC_GUARDIAN_PIN — ${problem}.`);
+    console.error(`[scout] refusing to start: CHPC_GUARDIAN_PIN — ${problem}.`);
     process.exit(1);
   }
 }
 // Dev convenience: explicit opt-in, loopback only. Never implicit.
 const allowNoPin = !envPin && /^(1|true)$/i.test(env.CHPC_ALLOW_NO_PIN || '');
 if (allowNoPin && !loopback) {
-  console.error('[chpc-server] refusing to start: CHPC_ALLOW_NO_PIN is only honoured when HOST is a loopback address.');
+  console.error('[scout] refusing to start: CHPC_ALLOW_NO_PIN is only honoured when HOST is a loopback address.');
   process.exit(1);
 }
 
 const retentionDays = env.CHPC_RETENTION_DAYS === undefined ? 90 : Number(env.CHPC_RETENTION_DAYS);
 if (!Number.isFinite(retentionDays) || retentionDays < 0) {
-  console.error('[chpc-server] CHPC_RETENTION_DAYS must be a non-negative number of days (0 = keep forever)');
+  console.error('[scout] CHPC_RETENTION_DAYS must be a non-negative number of days (0 = keep forever)');
   process.exit(1);
 }
 
@@ -49,15 +49,15 @@ if (retentionDays > 0) {
   const t = setInterval(() => {
     try {
       const n = purge();
-      if (n) console.log(`[chpc-server] retention: removed ${n} usage rows older than ${retentionDays} days`);
-    } catch (e) { console.error('[chpc-server] retention purge failed', e); }
+      if (n) console.log(`[scout] retention: removed ${n} usage rows older than ${retentionDays} days`);
+    } catch (e) { console.error('[scout] retention purge failed', e); }
   }, 6 * 60 * 60 * 1000);
   t.unref();
 }
 
 const server = app.listen(port, host, () => {
-  console.log(`[chpc-server] listening on http://${host}:${port}`);
-  console.log(`[chpc-server] usage retention: ${retentionDays || 'forever'} days · database: ${dbFile}`);
+  console.log(`[scout] listening on http://${host}:${port}`);
+  console.log(`[scout] usage retention: ${retentionDays || 'forever'} days · database: ${dbFile}`);
   const code = getSetupCode();
   if (code) {
     console.log('');
@@ -69,15 +69,15 @@ const server = app.listen(port, host, () => {
     console.log('  └──────────────────────────────────────────────────────────────┘');
     console.log('');
   } else if (allowNoPin) {
-    console.warn('[chpc-server] WARNING: CHPC_ALLOW_NO_PIN is set — the console runs WITHOUT a PIN on this machine only.');
+    console.warn('[scout] WARNING: CHPC_ALLOW_NO_PIN is set — the console runs WITHOUT a PIN on this machine only.');
   } else {
-    console.log(`[chpc-server] guardian PIN: ${envPin ? 'set by CHPC_GUARDIAN_PIN' : 'stored (change it in the console)'}`);
+    console.log(`[scout] guardian PIN: ${envPin ? 'set by CHPC_GUARDIAN_PIN' : 'stored (change it in the console)'}`);
   }
 });
 
 for (const sig of ['SIGINT', 'SIGTERM']) {
   process.on(sig, () => {
-    console.log(`[chpc-server] ${sig} — shutting down`);
+    console.log(`[scout] ${sig} — shutting down`);
     server.close(() => process.exit(0));
     setTimeout(() => process.exit(0), 3000).unref();
   });

@@ -1,4 +1,4 @@
-// CHPC console — API client. Same-origin; Vite dev proxies /api to the server.
+// SCOUT console — API client. Same-origin; Vite dev proxies /api to the server.
 // Every parent request carries the guardian PIN. The PIN lives in
 // sessionStorage (cleared when the tab closes) or, if the parent opts in,
 // localStorage on this device.
