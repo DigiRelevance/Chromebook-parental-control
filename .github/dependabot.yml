@@ -25,6 +25,12 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+    ignore:
+      # scorecard-action 2.6.0 was released without its Docker image
+      # (ghcr.io/ossf/scorecard-action:v2.6.0 is missing), so the job cannot
+      # start. Stay on 2.5.0; lift when 2.6.1 or later is out.
+      - dependency-name: "ossf/scorecard-action"
+        versions: ["2.6.0"]
   - package-ecosystem: docker
     directory: "/"
     schedule:
