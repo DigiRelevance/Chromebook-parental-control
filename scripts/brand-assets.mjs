@@ -17,7 +17,9 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = path.resolve(new URL('..', import.meta.url).pathname);
-const svg = (name) => fs.readFileSync(path.join(root, 'brand', name), 'utf8').replace(/<!--[\s\S]*?-->/g, '');
+// Comments in the SVG sources are left in place: browsers ignore them, and
+// stripping them with a regex is not a sanitiser (CodeQL js/incomplete-multi-character-sanitization).
+const svg = (name) => fs.readFileSync(path.join(root, 'brand', name), 'utf8');
 const sized = (name, px) => svg(name).replace('<svg ', `<svg width="${px}" height="${px}" `);
 
 const FONTS = '<link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;500;600&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">';
