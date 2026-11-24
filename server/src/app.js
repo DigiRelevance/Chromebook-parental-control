@@ -108,7 +108,7 @@ export function createApp(opts = {}) {
     try {
       if (setupCode) fs.writeFileSync(opts.setupCodeFile, setupCode + '\n', { mode: 0o600 });
       else if (fs.existsSync(opts.setupCodeFile)) fs.unlinkSync(opts.setupCodeFile);
-    } catch (e) { log('[chpc-server] could not update setup code file', e && e.message); }
+    } catch (e) { log('[scout] could not update setup code file', e && e.message); }
   };
   if (needsSetup()) { setupCode = normalizeCode(opts.setupCode) || makeCode(); writeSetupFile(); }
   // Unknown pairing codes are rate-limited per client so codes can't be enumerated.
@@ -171,7 +171,7 @@ export function createApp(opts = {}) {
     setupCode = null;
     writeSetupFile();
     requirePin.invalidate();
-    log('[chpc-server] guardian PIN set up from ' + key);
+    log('[scout] guardian PIN set up from ' + key);
     res.status(201).json({ ok: true, pinSource: 'db' });
   });
 
@@ -247,7 +247,7 @@ export function createApp(opts = {}) {
     if (problem) return err(res, 400, problem, { field: 'pin' });
     setSetting(db, 'pinHash', hashPin(req.body.pin));
     requirePin.invalidate();
-    log('[chpc-server] guardian PIN changed from ' + (req.ip || 'unknown'));
+    log('[scout] guardian PIN changed from ' + (req.ip || 'unknown'));
     res.json({ ok: true, pinSource: 'db' });
   });
 
@@ -401,7 +401,7 @@ export function createApp(opts = {}) {
   app.use((req, res) => err(res, 404, 'not found'));
   app.use((e, req, res, _next) => {
     const status = e.status || e.statusCode || 500;
-    if (status >= 500) log('[chpc-server]', e);
+    if (status >= 500) log('[scout]', e);
     if (e.type === 'entity.parse.failed') return err(res, 400, 'request body is not valid JSON');
     if (e.type === 'entity.too.large') return err(res, 413, 'request body too large');
     res.status(status).json({ error: status >= 500 ? 'server error' : (e.message || 'error') });

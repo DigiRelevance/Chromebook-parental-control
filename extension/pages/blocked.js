@@ -1,4 +1,4 @@
-/* CHPC Family — lock page. Explains why the navigation was blocked. */
+/* SCOUT — lock page. Explains why the navigation was blocked. */
 'use strict';
 (function () {
   const REASONS = {

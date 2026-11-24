@@ -335,7 +335,7 @@ the host, falls back to `CHPC_WHY`, has a Go back button.
 
 ## 7. Known gaps / follow-ups
 
-1. **Extension removal by the child** is outside CHPC's control (Developer
+1. **Extension removal by the child** is outside SCOUT's control (Developer
    mode). Recommend supervised/managed accounts; consider publishing to the
    Chrome Web Store (unlisted) so Family Link approval flows apply.
 2. **Single guardian PIN**, no per-parent identity or audit trail of who changed
@@ -350,3 +350,15 @@ the host, falls back to `CHPC_WHY`, has a Go back button.
    supports several).
 7. Metering counts the focused active tab only; audio playing in a background
    tab is not counted.
+
+## Brand assets
+
+`brand/` holds the SVG sources (mark at 96/32/16, the alternative home mark, the
+lock-page illustration) and `brand/BRAND.md` documents colours, type and usage.
+`scripts/brand-assets.mjs` (`npm run brand:assets`) renders them with Playwright
+into `extension/icons/icon{16,32,48,128}.png` (referenced by `manifest.json`
+`icons` and `action.default_icon`) and the store/social PNGs under
+`brand/store/`. The console favicon is `web/public/favicon.svg`; the console's
+header mark is `web/src/components/Mark.jsx`; the lock page inlines the
+illustration. Colour tokens in `web/src/style.css`, `extension/popup.html` and
+`extension/pages/blocked.html` are the brand palette.

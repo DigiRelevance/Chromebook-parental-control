@@ -1,4 +1,9 @@
-# Chromebook Parental Control (CHPC)
+<p align="center"><img src="brand/mark.svg" width="96" height="96" alt=""></p>
+
+# SCOUT
+
+**Self-hosted ChromeOS Oversight & Usage Tracker for the family. Your rules, kept at home.**
+
 
 [![Tests](https://github.com/marfleetn/Chromebook-parental-control/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marfleetn/Chromebook-parental-control/actions/workflows/ci.yml)
 [![Security](https://github.com/marfleetn/Chromebook-parental-control/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/marfleetn/Chromebook-parental-control/actions/workflows/security.yml)
@@ -27,6 +32,11 @@ reports usage. No third-party cloud: the machine running this repo (a Raspberry
 Pi, a laptop, a Chromebook in Linux mode, a NAS or any Docker host) is the
 source of truth.
 
+> **Formerly CHPC.** The product is now called SCOUT. Machine-facing names keep
+> the short form so existing installs carry on unchanged: the `chpc` command,
+> the `chpc` service and user, `/var/lib/chpc`, `CHPC_*` environment variables,
+> the `@chpc/*` packages and the Docker image name. Nothing needs migrating.
+
 ## Install in one line
 
 On a Debian/Ubuntu/Raspberry Pi OS machine, or inside a Chromebook's Linux
@@ -36,7 +46,7 @@ terminal:
 curl -fsSL https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/install.sh | sudo bash
 ```
 
-It installs Node 22 if needed, builds CHPC, sets it up as an always-on service
+It installs Node 22 if needed, builds SCOUT, sets it up as an always-on service
 and finishes by printing the console address, a QR code and a one-time **setup
 code**. Open the address in a browser, enter the code, choose your PIN. Done.
 Manage it later with `sudo chpc status | logs | update | reset-pin`.
@@ -61,6 +71,7 @@ from the console. Full walkthrough: [docs/USER-GUIDE.md](docs/USER-GUIDE.md).
 | `web/`        | React + Vite parent console (served by the server).                                  |
 | `extension/`  | Chrome Manifest V3 extension: applies the policy with declarativeNetRequest, meters usage. |
 | `install.sh`  | One-line installer (systemd service, `chpc` helper).                                 |
+| `brand/`      | Brand system and assets: mark, lock illustration, store tiles, social preview ([BRAND.md](brand/BRAND.md)). `npm run brand:assets` re-renders the PNGs. |
 | `docs/`       | [User guide](docs/USER-GUIDE.md) · [High-level design](docs/HLD.md) · [Low-level design](docs/LLD.md) · [Security report](docs/SECURITY-REPORT.md) |
 
 ## Requirements
@@ -151,7 +162,7 @@ Docker reads them from `.env`.
 - The extension is loaded **unpacked in Developer mode**. A child who can open
   `chrome://extensions` can disable or remove it. On a Chromebook, use a
   supervised (Family Link) child account or an enterprise-managed device that
-  force-installs the extension and blocks Developer mode; CHPC cannot enforce
+  force-installs the extension and blocks Developer mode; SCOUT cannot enforce
   that itself.
 - Only Chrome web navigation is controlled. Android apps, Linux apps, guest
   mode and other browsers are out of scope.
@@ -216,13 +227,23 @@ auto-merge*). Major updates, and anything whose checks fail, wait for review.
 `.github/pull_request_template.md` gives every PR the same test and security
 checklist.
 
+## Brand
+
+Paper, ink and brass: stationery and a well-made notebook, not a security
+dashboard. The mark is allowed hours on a clock face. Everything the product and
+the store listing use lives in [`brand/`](brand/) and is described in
+[`brand/BRAND.md`](brand/BRAND.md): colours, type, the mark at each size, the
+lock-page illustration, Chrome Web Store tiles and the GitHub social preview.
+
+<p align="center"><img src="brand/store/social-preview.png" width="640" alt="SCOUT — Your rules, kept at home."></p>
+
 ## Licence
 
 MIT — see `LICENSE`.
 
 ## Disclaimer
 
-CHPC is an independent, open-source project. It is not affiliated with,
+SCOUT is an independent, open-source project. It is not affiliated with,
 endorsed by or supported by Google, and "Chrome", "Chromebook", "ChromeOS"
 and "Family Link" are trademarks of Google LLC.
 
@@ -233,7 +254,7 @@ in that design, including a documented security model, a fail-closed rule
 engine, an adversarial security test suite and automated vulnerability
 scanning that run on every change (see [Security model](#security-model) and
 [docs/SECURITY-REPORT.md](docs/SECURITY-REPORT.md)). No filtering or
-screen-time software is complete or infallible. CHPC controls Chrome web
+screen-time software is complete or infallible. SCOUT controls Chrome web
 navigation by hostname only, depends on Chrome and ChromeOS behaviour that
 Google can change at any time, and can be disabled by a child who has the
 device permissions to do so (see [Known limits](#known-limits-read-this)). It
@@ -251,15 +272,15 @@ or disclosure; device, network or account problems; and any direct, indirect,
 incidental, consequential or special loss. Nothing in this notice limits any
 liability that cannot be excluded by applicable law.
 
-**Your responsibilities.** By installing or running CHPC you accept that you
+**Your responsibilities.** By installing or running SCOUT you accept that you
 are responsible for: deploying it only on devices and accounts you own or are
 legally entitled to supervise; keeping the guardian PIN, server and host
 operating system secure and up to date; reviewing the policies you configure;
 and complying with the laws that apply to you, including those on the
 monitoring of minors and on personal data. Browsing hostnames and usage
-minutes recorded by CHPC are personal data about your child and stay on the
+minutes recorded by SCOUT are personal data about your child and stay on the
 server you run; you are the controller of that data.
 
 This notice is a plain-language summary and does not replace the licence
-terms. It is not legal advice; if you intend to distribute CHPC, offer it as a
+terms. It is not legal advice; if you intend to distribute SCOUT, offer it as a
 service or use it outside a household, obtain your own legal advice.

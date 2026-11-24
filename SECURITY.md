@@ -1,6 +1,6 @@
 # Security policy
 
-CHPC is a self-hosted tool that controls a child's internet access, so security
+SCOUT is a self-hosted tool that controls a child's internet access, so security
 bugs are treated as the highest-priority class of bug.
 
 ## Reporting a vulnerability

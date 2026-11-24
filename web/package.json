@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Parent console for CHPC (React + Vite SPA).",
+  "description": "Parent console for SCOUT (React + Vite SPA).",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

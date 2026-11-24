@@ -1,14 +1,48 @@
 {
   "manifest_version": 3,
-  "name": "CHPC Family",
-  "version": "0.2.0",
-  "description": "Self-hosted parental controls for family Chromebooks. Policy lives on the parent's console; this extension applies it.",
+  "name": "SCOUT",
+  "description": "Self-hosted ChromeOS Oversight & Usage Tracker. Allowed hours, daily limits and blocked sites, set on your own console at home.",
+  "version": "0.3.0",
   "minimum_chrome_version": "116",
-  "background": { "service_worker": "background.js", "type": "module" },
-  "action": { "default_popup": "popup.html", "default_title": "CHPC Family" },
-  "permissions": ["storage", "declarativeNetRequest", "tabs", "alarms", "idle"],
-  "host_permissions": ["<all_urls>"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SCOUT",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "declarativeNetRequest",
+    "tabs",
+    "alarms",
+    "idle"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "web_accessible_resources": [
-    { "resources": ["pages/blocked.html"], "matches": ["http://*/*", "https://*/*"] }
+    {
+      "resources": [
+        "pages/blocked.html"
+      ],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ]
+    }
   ]
 }

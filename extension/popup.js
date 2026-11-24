@@ -1,4 +1,4 @@
-/* CHPC Family — popup (pairing + status). No inline scripts: MV3 CSP forbids them. */
+/* SCOUT — popup (pairing + status). No inline scripts: MV3 CSP forbids them. */
 'use strict';
 
 const $ = (id) => document.getElementById(id);

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 320" role="img" aria-label="The clock mark at night under a crescent moon">
+  <!-- Lock-page illustration: the mark resting for the night. Brass soft for moon and stars, line colour for the ground. -->
+  <path d="M372 58a34 34 0 1 0 22 50a27 27 0 0 1-22-50z" fill="#b79a55"/>
+  <circle cx="96" cy="84" r="4" fill="#b79a55"/>
+  <circle cx="150" cy="44" r="3" fill="#b79a55"/>
+  <circle cx="312" cy="40" r="3" fill="#b79a55"/>
+  <circle cx="64" cy="150" r="3" fill="#b79a55"/>
+  <g transform="translate(143.6 83.4) scale(1.8)">
+    <path fill-rule="evenodd" d="M48 4a44 44 0 1 0 0 88a44 44 0 1 0 0-88zM55 41V11.67A37 37 0 0 1 84.33 41z" fill="#8a6d2f"/>
+    <path d="M45 14h6v34h-6zM48 45h26v6H48z" fill="#f7f4ee"/>
+    <circle cx="48" cy="48" r="7" fill="#f7f4ee"/>
+    <circle cx="48" cy="48" r="2.5" fill="#8a6d2f"/>
+  </g>
+  <path d="M36 249.5h388" stroke="#d9d2c2" stroke-width="3" fill="none"/>
+  <path d="M60 266h120M210 266h60M300 266h100" stroke="#d9d2c2" stroke-width="3" fill="none"/>
+</svg>

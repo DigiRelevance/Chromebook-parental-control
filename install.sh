@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# CHPC one-line installer for Debian/Ubuntu/Raspberry Pi OS and the Chromebook
-# Linux container. Installs Node 22 if needed, downloads and builds CHPC, sets
+# SCOUT one-line installer for Debian/Ubuntu/Raspberry Pi OS and the Chromebook
+# Linux container. Installs Node 22 if needed, downloads and builds SCOUT, sets
 # it up as an always-on service, and prints the console address + setup code.
 #
 #   curl -fsSL https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/install.sh | sudo bash
@@ -45,7 +45,7 @@ if [ "$need_node" -eq 1 ]; then
 fi
 echo "node $(node --version), npm $(npm --version)"
 
-say "Downloading CHPC ($CHPC_REPO @ $CHPC_REF)"
+say "Downloading SCOUT ($CHPC_REPO @ $CHPC_REF)"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "https://github.com/${CHPC_REPO}/archive/${CHPC_REF}.tar.gz" -o "$tmp/chpc.tar.gz"
@@ -71,7 +71,7 @@ mkdir -p "$DATA_DIR" && chown chpc:chpc "$DATA_DIR" && chmod 700 "$DATA_DIR"
 mkdir -p "$(dirname "$ENV_FILE")"
 if [ ! -f "$ENV_FILE" ]; then
   cat > "$ENV_FILE" <<EOF
-# CHPC service settings. Edit, then: sudo systemctl restart chpc
+# SCOUT service settings. Edit, then: sudo systemctl restart chpc
 HOST=0.0.0.0
 PORT=${CHPC_PORT}
 CHPC_DB=${DATA_DIR}/chpc.db
@@ -85,7 +85,7 @@ fi
 
 cat > "/etc/systemd/system/${SERVICE}.service" <<EOF
 [Unit]
-Description=CHPC — Chromebook parental control
+Description=SCOUT — self-hosted ChromeOS oversight and usage tracker
 After=network-online.target
 Wants=network-online.target
 
@@ -129,7 +129,7 @@ url="http://${ip}:${CHPC_PORT}"
 setup_code=""
 [ -f "$DATA_DIR/setup-code.txt" ] && setup_code="$(cat "$DATA_DIR/setup-code.txt")"
 
-printf '\n\033[1;32m✔ CHPC is installed and running.\033[0m\n\n'
+printf '\n\033[1;32m✔ SCOUT is installed and running.\033[0m\n\n'
 echo   "  Console:      $url"
 if [ -n "$setup_code" ]; then
   echo "  Setup code:   ${setup_code:0:4}-${setup_code:4}   (single use — choose your PIN in the console)"

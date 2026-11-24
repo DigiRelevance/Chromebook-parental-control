@@ -5,7 +5,7 @@ status register in §9 says what is verified how.*
 
 ## 1. Purpose
 
-CHPC is a self-hosted parental-control system for family Chromebooks. A parent
+SCOUT (Self-hosted ChromeOS Oversight & Usage Tracker) is a parental-control system for family Chromebooks. A parent
 authors internet rules in a web console; a Chrome **extension enforces** those
 rules locally on each child device and reports usage back to the API so time
 budgets are real, not just recorded. There is **no third-party cloud**: the
@@ -49,7 +49,7 @@ or a Docker host) is the single source of truth.
                 └──────────────┬──────────────┘
                                │ same-origin JSON /api, X-Guardian-PIN
                 ┌──────────────▼──────────────┐
-                │        CHPC Server          │
+                │        SCOUT Server          │
                 │  Express 5 + node:sqlite    │
                 │  - guardian PIN auth        │
                 │  - policy CRUD, validation  │
@@ -161,7 +161,7 @@ Wi-Fi can reach the port.
 | Pairing code guessing | CSPRNG, 8 chars / 22 letters; unknown-code lookups rate-limited per address (20 per 15 min). Codes are revocable bearer credentials — treat like a password. |
 | Input abuse | Strict validation: allow-listed policy keys, list caps (500), pattern length cap, host-shape check, integer bounds, JSON body limit 256 kB, malformed JSON → 400. |
 | Usage tampering | Server clock is authoritative (client timestamps ignored); one report capped at 3600 s; only the device's own code can report. A device can over-report (locking itself out sooner) but never under-report. |
-| Child defeats the extension | Unpairing requires the PIN. Disabling/removing an unpacked extension in Developer mode is **not** preventable by CHPC: use a supervised (Family Link) or enterprise-managed Chrome account that blocks Developer mode / force-installs the extension. Documented limitation. |
+| Child defeats the extension | Unpairing requires the PIN. Disabling/removing an unpacked extension in Developer mode is **not** preventable by SCOUT: use a supervised (Family Link) or enterprise-managed Chrome account that blocks Developer mode / force-installs the extension. Documented limitation. |
 | Data exposure at rest | SQLite file created `0600` in a `0700` directory; hostnames only, never URLs; retention purge; delete-child cascades. Back-ups are the operator's responsibility. |
 | Transport | Plain HTTP on the LAN by design. For remote access, terminate TLS at a reverse proxy and set `CHPC_TRUST_PROXY=1` so rate limits key on the real client IP. |
 | Supply chain | Two runtime dependencies (`express`, `supertest` dev-only aside); `npm audit --omit=dev` clean; dev toolchain kept current (Vite 7, esbuild 0.25+). CI re-audits. |

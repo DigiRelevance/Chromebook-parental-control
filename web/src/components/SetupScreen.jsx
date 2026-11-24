@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Mark from "./Mark.jsx";
 import { api } from "../api.js";
 
 const CODE_RE = /^[A-Z]{8}$/;
@@ -42,7 +43,7 @@ export default function SetupScreen({ onDone, health }) {
     <div className="app">
       <main className="content" style={{ maxWidth: 480, paddingTop: 60 }}>
         <div className="row" style={{ gap: 10, marginBottom: 18 }}>
-          <span className="brand-mark">CH</span>
+          <Mark size={34} />
           <h1 style={{ margin: 0 }}>Welcome — set up your PIN</h1>
         </div>
         <form className="card" onSubmit={submit}>
@@ -73,7 +74,7 @@ export default function SetupScreen({ onDone, health }) {
           <label htmlFor="accept-terms" style={{ display: "flex", gap: 8, alignItems: "flex-start", marginTop: 14, fontSize: ".84rem", fontWeight: "normal", cursor: "pointer" }}>
             <input id="accept-terms" type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} style={{ marginTop: 3 }} />
             <span>
-              I will use CHPC only on devices I own or am entitled to supervise. I understand it is provided
+              I will use SCOUT only on devices I own or am entitled to supervise. I understand it is provided
               <strong> as is, without warranty</strong>, that it supports supervision rather than replacing it,
               and I accept the{" "}
               <a href={TERMS_URL} target="_blank" rel="noopener noreferrer">licence and disclaimer</a>.

@@ -52,7 +52,7 @@ Wait a minute or two. At the end it prints:
   code you can scan with your phone;
 - a one-time **setup code** like `KTRM-XPBD`.
 
-CHPC now starts by itself whenever the machine boots. Handy commands later:
+SCOUT now starts by itself whenever the machine boots. Handy commands later:
 `sudo chpc status`, `sudo chpc logs`, `sudo chpc update`, `sudo chpc reset-pin`.
 
 ### Option B — Docker (NAS, home server)
@@ -82,7 +82,7 @@ The terminal prints the setup code.
 Open the console address in a browser. The first screen asks for the **setup
 code** and a **PIN** of your choosing (6+ characters; `123456` and the like are
 refused), and asks you to tick a box accepting the licence and disclaimer
-(the README's [Disclaimer](../README.md#disclaimer) section: use CHPC only on
+(the README's [Disclaimer](../README.md#disclaimer) section: use SCOUT only on
 devices you are entitled to supervise, it comes without warranty, and it
 supports supervision rather than replacing it). The code works once; after
 that the PIN is the only key.
@@ -127,7 +127,7 @@ device the console locks that device out for 15 minutes.
      a USB stick, or download the repo zip);
    - open `chrome://extensions`, switch **Developer mode** on (top right),
      click **Load unpacked**, pick the `extension` folder;
-   - pin the *CHPC Family* icon (puzzle-piece menu → pin) and click it;
+   - pin the *SCOUT* icon (puzzle-piece menu → pin) and click it;
    - enter the **console address** (`http://SERVER-IP:4100`) and the **pairing
      code**, click **Pair & connect**. The popup should say *Paired* and show
      the child's name.
@@ -166,7 +166,7 @@ the console is reachable, so the child cannot quietly opt out that way.
 | Change the time zone the rules run in | **Settings** (top right). |
 | Change the PIN | **Settings** → Guardian PIN. Every browser and every Chromebook popup will ask for the new one. |
 | Forgot the PIN | On the server: `sudo chpc reset-pin` (Docker: see Setup). It prints a new setup code. |
-| Update CHPC | `sudo chpc update` (Docker: `docker compose pull && docker compose up -d`). Rules and data are kept. |
+| Update SCOUT | `sudo chpc update` (Docker: `docker compose pull && docker compose up -d`). Rules and data are kept. |
 
 ## What the lock page says
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Mark from "./Mark.jsx";
 
 /** Full-screen guardian PIN prompt. Shown until the server accepts a PIN. */
 export default function PinGate({ onUnlock, message, health }) {
@@ -27,7 +28,7 @@ export default function PinGate({ onUnlock, message, health }) {
     <div className="app">
       <main className="content" style={{ maxWidth: 440, paddingTop: 60 }}>
         <div className="row" style={{ gap: 10, marginBottom: 18 }}>
-          <span className="brand-mark">CH</span>
+          <Mark size={34} />
           <h1 style={{ margin: 0 }}>Parent Console</h1>
         </div>
         <form className="card" onSubmit={submit}>

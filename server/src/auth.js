@@ -175,7 +175,7 @@ export function makeRequirePin({ getPin, allowNoPin = false, limiter = new RateL
     }
     if (!verify(supplied)) {
       limiter.fail(key);
-      log(`[chpc-server] bad guardian PIN from ${key}`);
+      log(`[scout] bad guardian PIN from ${key}`);
       return res.status(401).json({ error: 'guardian PIN is wrong', code: 'pin-wrong' });
     }
     limiter.reset(key);
