@@ -11,6 +11,13 @@ updates:
       dev-toolchain:
         dependency-type: development
     open-pull-requests-limit: 5
+    ignore:
+      # eslint-plugin-react does not yet declare support for ESLint 10; a major
+      # bump makes `npm ci` fail with a peer conflict. Lift when the plugin does.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
