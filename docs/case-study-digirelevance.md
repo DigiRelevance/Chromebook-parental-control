@@ -26,7 +26,7 @@ Stack: Chrome extension (Manifest V3), Node.js, SQLite, React · Hosting: self-h
 ### Where it started
 
 Roblox has been off our family's devices for over 18 months. The reasons are
-set out in [AI, children and the business of games](ARTICLE-URL): who children
+set out in [AI, children and the business of games](https://www.linkedin.com/pulse/playing-intelligence-nick-marfleet-hvhlc/): who children
 meet on these platforms, and how they are sold to.
 
 Removing it did not end the matter. Kids aren't stupid. With the app gone, they
@@ -196,8 +196,9 @@ close it.
 
 ## Open points before publishing
 
-1. **Article link.** `ARTICLE-URL` in "Where it started" needs the published
-   address of *AI, children and the business of games*.
+1. **Article title.** The link text is *AI, children and the business of games*,
+   the heading on the copy you sent. The LinkedIn address suggests the published
+   title may be "Playing Intelligence". Use whichever title the article carries.
 2. **"Within weeks" in the standfirst.** You said they found workarounds
    "quickly"; "within weeks" is my wording. Change it if it overstates.
 3. **Results.** No outcome figures are included because none were supplied. If
