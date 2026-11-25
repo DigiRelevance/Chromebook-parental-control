@@ -210,6 +210,8 @@ When a page is blocked the child sees a lock page naming the site and one of:
   (`CHPC_RETENTION_DAYS` changes this).
 - Nothing leaves your home network: no accounts, no telemetry, no cloud.
 - Deleting a child deletes everything about them immediately.
+- The full statement is [PRIVACY.md](../PRIVACY.md) in the repository; it is
+  also the privacy policy linked from the Chrome Web Store listing.
 
 ## Files worth knowing
 
