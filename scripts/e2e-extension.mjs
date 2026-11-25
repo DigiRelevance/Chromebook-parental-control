@@ -138,6 +138,43 @@ try {
   const left = await sw.evaluate(() => chrome.storage.local.get(['pendingUsage']));
   check(Object.keys(left.pendingUsage || {}).length === 0, 'pending usage cleared after a successful flush');
 
+  // Away from the console: limits start afresh at local midnight, and minutes
+  // from earlier days are reported under the day they happened.
+  const tz = (await parent('/settings')).body.timezone;
+  const dayStr = (offset) => new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date(Date.now() + offset * 86400000));
+  const hasYoutubeRule = async () => (await rules()).some((r) => JSON.stringify(r.condition).includes('youtube'));
+  await parent(`/kids/${kid.id}/policy`, { method: 'PUT', body: JSON.stringify({ deny: ['example.com'], siteBudgets: [{ pattern: 'youtube.com', minutes: 1 }] }) });
+  await sw.evaluate(() => chrome.storage.local.set({ pendingUsage: { 'youtube.com': 60 } }));
+  await refresh();
+  check(await hasYoutubeRule(), 'a used-up site limit blocks the site while online');
+  // Same day, console out of reach: still blocked.
+  await sw.evaluate(() => chrome.storage.local.set({ apiBase: 'http://127.0.0.1:9' }));
+  let off = await refresh();
+  check(off && off.online === false, 'console is out of reach');
+  check(await hasYoutubeRule(), 'offline on the same day: the used-up limit still applies');
+  // Two days later, still out of reach: yesterday's minutes sit in storage.
+  await sw.evaluate(({ twoDaysAgo, yesterday }) => chrome.storage.local.set({
+    lastSuccess: twoDaysAgo, pendingDay: yesterday, pendingUsage: { 'youtube.com': 60, 'bbc.co.uk': 300 },
+  }), { twoDaysAgo: Date.now() - 2 * 86400000, yesterday: dayStr(-1) });
+  await refresh();
+  check(!(await hasYoutubeRule()), 'offline on a later day: the site limit has started afresh');
+  let held = await sw.evaluate(() => chrome.storage.local.get(['pendingUsage', 'pendingDay', 'carryUsage']));
+  check(held.pendingDay === dayStr(0) && Object.keys(held.pendingUsage).length === 0, 'earlier minutes no longer count against today');
+  check(held.carryUsage[dayStr(-1)]['bbc.co.uk'] === 300, 'earlier minutes are held under their own day');
+  await sw.evaluate(() => chrome.storage.local.set({ pendingUsage: { 'youtube.com': 60 } }));
+  await refresh();
+  check(await hasYoutubeRule(), "offline: today's own minutes use up today's limit");
+  // Back in reach: held days are filed where they belong, not on today.
+  const before = (await parent(`/kids/${kid.id}/usage/today`)).body.status.usedTodayMin;
+  await sw.evaluate((b) => chrome.storage.local.set({ apiBase: b }), base);
+  off = await refresh();
+  check(off && off.online === true, 'console is back in reach');
+  const hist = (await parent(`/kids/${kid.id}/usage/history?days=2`)).body.perDay;
+  check(hist.find((d) => d.isoDay === dayStr(-1)).minutes === 6, "yesterday's held minutes were filed under yesterday");
+  check((await parent(`/kids/${kid.id}/usage/today`)).body.status.usedTodayMin === before + 1, "only today's minute was added to today");
+  held = await sw.evaluate(() => chrome.storage.local.get(['pendingUsage', 'carryUsage']));
+  check(Object.keys(held.pendingUsage).length === 0 && Object.keys(held.carryUsage).length === 0, 'nothing is left held after reporting');
+
   // Unpair needs the PIN.
   await popup.reload();
   await popup.click('#show-forget-btn');

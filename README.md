@@ -31,7 +31,8 @@ Self-hosted parental control for family Chromebooks. A parent sets rules from a
 web console; a Chrome **extension enforces** them on each child's Chromebook and
 reports usage. No third-party cloud: the machine running this repo (a Raspberry
 Pi, a laptop, a Chromebook in Linux mode, a NAS or any Docker host) is the
-source of truth.
+source of truth. Most families run it at home; it can also be
+[hosted where the Chromebook can reach it from any network](#home-or-remote-where-to-run-the-server).
 
 > **Formerly CHPC.** The product is now called SCOUT. Machine-facing names keep
 > the short form so existing installs carry on unchanged: the `chpc` command,
@@ -96,7 +97,7 @@ code from the console. Full walkthrough: [docs/USER-GUIDE.md](docs/USER-GUIDE.md
 
 ```bash
 npm install
-npm test                    # 122 tests incl. the security suite (npm run test:coverage adds thresholds)
+npm test                    # 133 tests incl. the security suite (npm run test:coverage adds thresholds)
 npm run build               # console -> web/dist, extension bundle -> extension/vendor/core.js
 CHPC_PUBLIC_DIR=web/dist npm start
 ```
@@ -142,10 +143,32 @@ Docker reads them from `.env`.
   declarativeNetRequest rule set Chrome enforces. Both are pure and tested.
 - The extension recomputes rules every minute so time windows, off days and
   exhausted budgets flip over without a server round-trip, and keeps applying
-  the last cached policy when the server is unreachable.
+  the last cached policy when the server is unreachable. Daily and per-site
+  limits keep counting down offline and start afresh at local midnight.
 - Usage is metered on the device (one minute per minute the focused tab shows
   a site while the child is active) and reported in batches. The server clock
-  is authoritative and only hostnames are stored.
+  is authoritative and only hostnames are stored. Minutes metered while the
+  server was out of reach are reported afterwards under the day they happened
+  (completed days in the last 31 only).
+
+## Home or remote: where to run the server
+
+The extension talks to whatever address was typed in when it was paired, so
+the server can live in either place.
+
+| | At home (default) | Remote (reachable from the internet) |
+| --- | --- | --- |
+| Where | Raspberry Pi, laptop, NAS on the home network | A small cloud server, or the home machine published through a TLS reverse proxy or tunnel |
+| Address the Chromebook is paired with | `http://192.168.x.x:4100` | `https://scout.example.com` |
+| Chromebook at home | Live: rule changes within a minute, usage reported as it happens | Same |
+| Chromebook on another network (school, grandparents, holiday) | Keeps enforcing the last rules it received; limits count down and reset at midnight on the device; rule changes and usage wait until it is home again; the console shows *not reporting* meanwhile | Live everywhere |
+| Exposure | Home network only | The console is on the internet, protected by the guardian PIN |
+
+Remote hosting **must** use HTTPS (the PIN travels in a request header), needs
+`CHPC_TRUST_PROXY=1` so lockouts see real client addresses, and deserves a long
+PIN that is used nowhere else. The data still sits only on a server you
+control: SCOUT's publishers run nothing and receive nothing in either setup.
+Step-by-step: [docs/USER-GUIDE.md](docs/USER-GUIDE.md#using-scout-away-from-home).
 
 ## Security model
 
@@ -166,9 +189,12 @@ Docker reads them from `.env`.
   the server.
 - **Data minimisation**: only hostnames, never URLs; usage purged after 90 days
   by default; database file created with owner-only permissions.
-- **Transport**: HTTP on your LAN. To reach the console from outside the house,
-  put it behind a TLS reverse proxy (Caddy, nginx) or use Tailscale, and set
-  `CHPC_TRUST_PROXY=1` for a proxy.
+- **Transport**: HTTP on your LAN. To reach the console from outside the
+  house, or to keep a Chromebook in live contact on other networks, put the
+  server behind a TLS reverse proxy (Caddy, nginx) and set
+  `CHPC_TRUST_PROXY=1`; see
+  [Home or remote](#home-or-remote-where-to-run-the-server). Never expose the
+  plain HTTP port to the internet.
 
 ### Known limits (read this)
 
@@ -193,7 +219,7 @@ for how long.
 ## Development
 
 ```bash
-npm test              # 122 tests: core, server, adversarial security suite, repo hygiene
+npm test              # 133 tests: core, server, adversarial security suite, repo hygiene
 npm run test:security # the 40 security + hygiene checks alone
 npm run test:coverage # same, failing under 95% lines / 80% branches / 95% functions
 npm run lint          # ESLint (server, core, extension, console)
@@ -213,7 +239,7 @@ version) are regenerated on the `badges` branch after each green run on `main`.
 
 | Workflow | Jobs (these are the check names) | What it proves |
 | -------- | -------------------------------- | -------------- |
-| **Tests** (`ci.yml`) | `lint`, `test (22)`, `test (24)`, `docker`, `badges` (main only) | ESLint; 114 unit, integration and security tests on Node 22 and 24 with coverage thresholds (95% lines, 80% branches, 95% functions); console and extension builds; committed extension bundle is current; Docker image builds, starts, prints a setup code and answers `/api/health` |
+| **Tests** (`ci.yml`) | `lint`, `test (22)`, `test (24)`, `docker`, `badges` (main only) | ESLint; 133 unit, integration and security tests on Node 22 and 24 with coverage thresholds (95% lines, 80% branches, 95% functions); console and extension builds; committed extension bundle is current; Docker image builds, starts, prints a setup code and answers `/api/health` |
 | **Security** (`security.yml`) | `audit`, `codeql`, `secrets`, `dependency-review` | `npm audit` fails on any runtime advisory and `npm audit signatures` verifies registry signatures and provenance; CodeQL security-and-quality analysis; TruffleHog scans the whole history for verified secrets; on PRs, dependency review blocks new vulnerable or GPL/AGPL dependencies; also weekly |
 | **Security tests** (`security-tests.yml`) | `security-tests` | The adversarial suite (`npm run test:security`): authentication bypass attempts, injection and prototype pollution, information leaks, cross-child isolation, DoS limits, path traversal, rule-engine fail-closed and regex-safety invariants, and repository tripwires (manifest permissions, no phone-home, pinned actions, hardened container, dependency surface); also weekly |
 | **Scorecard** (`scorecard.yml`) | `scorecard` | OpenSSF Scorecard: independent score of supply-chain practice (pinned dependencies, token permissions, SAST, branch protection, vulnerabilities), published to scorecard.dev and the Security tab |

@@ -15,19 +15,25 @@
  * Fail-closed behaviour
  *  - never paired            -> no rules (extension is inert until paired)
  *  - server unreachable      -> keep applying the last cached policy; local
- *                               metering keeps budgets counting down offline
+ *                               metering keeps budgets counting down offline,
+ *                               and they start afresh at local midnight. Minutes
+ *                               from earlier days are held and reported with
+ *                               their day once the console is back in reach.
  *  - no policy ever fetched and server unreachable > 10 min -> block all
  *    (local network excepted)
  *  - Chrome rejects the rule set -> retry in the simpler rule flavour, then
  *    fall back to the fail-closed set. A broken rule set never means "open".
  */
-import { buildDnrRules, failClosedRules, minimalBlockRules, globalBlockCode, applyPendingUsage, LOCK_PAGE } from './vendor/core.js';
+import {
+  buildDnrRules, failClosedRules, minimalBlockRules, globalBlockCode, LOCK_PAGE,
+  localClock, rollUsageDay, usageBatch, settleUsage, offlinePolicy, USAGE_LIMITS,
+} from './vendor/core.js';
 
 const ALARM_TICK = 'chpc-tick';
 const OFFLINE_MS = 10 * 60 * 1000;
 const FETCH_TIMEOUT_MS = 8000;
 const KEYS = ['apiBase', 'pairingCode', 'kidName', 'cachedPolicy', 'lastSuccess', 'lastFail',
-  'lastError', 'tz', 'pendingUsage', 'lastRules', 'lastBlock', 'ruleMode', 'ruleCount'];
+  'lastError', 'tz', 'pendingUsage', 'pendingDay', 'carryUsage', 'lastRules', 'lastBlock', 'ruleMode', 'ruleCount'];
 
 // ---------------------------------------------------------------- storage --
 const store = () => chrome.storage.local.get(KEYS);
@@ -36,6 +42,25 @@ const put = (pairs) => chrome.storage.local.set(pairs);
 function apiBase(s) { return String(s.apiBase || '').replace(/\/+$/, ''); }
 function deviceUrl(s, suffix = '') {
   return apiBase(s) + '/api/devices/' + encodeURIComponent(s.pairingCode) + suffix;
+}
+
+// -------------------------------------------------------------- usage day --
+const usageState = (s) => ({ pending: s.pendingUsage, pendingDay: s.pendingDay, carry: s.carryUsage });
+const putUsageState = (u) => put({ pendingUsage: u.pending, pendingDay: u.pendingDay, carryUsage: u.carry });
+const dayOf = (ms, tz) => localClock(ms, tz || 'UTC').date;
+
+/** Start a new usage day at local midnight; earlier days wait to be reported. */
+async function rollDay(s, now) {
+  const minDay = dayOf(now - USAGE_LIMITS.carryDays * 86400000, s.tz);
+  await putUsageState(rollUsageDay(usageState(s), dayOf(now, s.tz), minDay));
+}
+
+/** The cached policy as it should be enforced with the console out of reach. */
+function policyOffline(s, now) {
+  return offlinePolicy(s.cachedPolicy, s.pendingUsage, {
+    policyDay: s.lastSuccess ? dayOf(Number(s.lastSuccess), s.tz) : null,
+    today: dayOf(now, s.tz),
+  });
 }
 
 // ---------------------------------------------------------------- network --
@@ -72,14 +97,9 @@ async function refreshPolicy(s) {
   return j.policy;
 }
 
-/** POST pending usage as one batch; clears what was accepted. */
+/** POST held usage as one batch (earlier days first); clears what was accepted. */
 async function flushUsage(s) {
-  const pending = (s.pendingUsage && typeof s.pendingUsage === 'object') ? s.pendingUsage : {};
-  const entries = Object.entries(pending)
-    .filter(([, sec]) => Number(sec) > 0)
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .slice(0, 100)
-    .map(([site, seconds]) => ({ site, seconds: Math.round(Number(seconds)) }));
+  const entries = usageBatch(usageState(s));
   if (!entries.length) return;
   const r = await fetchJson(deviceUrl(s, '/usage'), {
     method: 'POST',
@@ -87,9 +107,7 @@ async function flushUsage(s) {
     body: JSON.stringify({ entries }),
   });
   if (!r.ok) throw new Error('usage HTTP ' + r.status);
-  const rest = { ...pending };
-  for (const e of entries) delete rest[e.site];
-  await put({ pendingUsage: rest });
+  await putUsageState(settleUsage(usageState(s), entries));
 }
 
 // ------------------------------------------------------------- metering ----
@@ -181,6 +199,7 @@ function tick(opts = {}) {
   ticking = (async () => {
     const s0 = await store();
     if (!s0.pairingCode || !s0.apiBase) { await clearRules().catch(() => {}); return { paired: false }; }
+    await rollDay(s0, Date.now());
     if (opts.meter !== false) await meterActiveTab(60);
 
     let online = true;
@@ -200,7 +219,7 @@ function tick(opts = {}) {
       const n = age > OFFLINE_MS ? await applyFailClosed('no policy yet and the console is unreachable') : (s.ruleCount || 0);
       return { paired: true, online, rules: n, failClosed: age > OFFLINE_MS };
     }
-    const policy = online ? s.cachedPolicy : applyPendingUsage(s.cachedPolicy, s.pendingUsage);
+    const policy = online ? s.cachedPolicy : policyOffline(s, Date.now());
     let r;
     try { r = await applyPolicy(policy, s); }
     catch (e) { r = { rules: await applyFailClosed(String(e && e.message || e)).catch(() => 0), mode: 'fail-closed' }; }
@@ -243,11 +262,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }
       case 'CHPC_STATUS': {
         const s = await store();
+        const offline = !!s.cachedPolicy && Number(s.lastFail || 0) > Number(s.lastSuccess || 0);
         return {
           paired: !!(s.pairingCode && s.apiBase), kidName: s.kidName || null,
           lastSuccess: s.lastSuccess || null, lastFail: s.lastFail || null, lastError: s.lastError || null,
           rules: s.ruleCount || 0, block: s.lastBlock || null, tz: s.tz || null,
-          policy: s.cachedPolicy || null,
+          policy: (offline ? policyOffline(s, Date.now()) : s.cachedPolicy) || null,
           pendingMinutes: Math.round(Object.values(s.pendingUsage || {}).reduce((a, b) => a + Number(b), 0) / 60),
         };
       }
