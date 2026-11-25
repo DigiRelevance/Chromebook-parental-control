@@ -70,8 +70,9 @@ docker compose up -d
 docker compose logs chpc        # shows the setup code
 ```
 
-Then, on each child's Chromebook, load the extension and pair it with a code
-from the console. Full walkthrough: [docs/USER-GUIDE.md](docs/USER-GUIDE.md).
+Then, on each child's Chromebook, install the SCOUT extension from the Chrome
+Web Store (a Family Link parent approves it on the spot) and pair it with a
+code from the console. Full walkthrough: [docs/USER-GUIDE.md](docs/USER-GUIDE.md).
 
 ## Packages
 
@@ -170,11 +171,16 @@ Docker reads them from `.env`.
 
 ### Known limits (read this)
 
-- The extension is loaded **unpacked in Developer mode**. A child who can open
-  `chrome://extensions` can disable or remove it. On a Chromebook, use a
-  supervised (Family Link) child account or an enterprise-managed device that
-  force-installs the extension and blocks Developer mode; SCOUT cannot enforce
-  that itself.
+- The extension is installed **from the Chrome Web Store** with the parent's
+  Family Link approval. A supervised child account cannot load unpacked
+  extensions at all (Developer mode is blocked by policy, and toggling
+  supervision off and on purges anything sideloaded), so the store is the only
+  route onto a supervised Chromebook. "Load unpacked" remains for developers
+  on an unsupervised profile.
+- Consumer Family Link cannot force-install an extension or stop a child
+  switching it off or removing it; only a managed (Workspace or school)
+  Chromebook can. SCOUT therefore shows **not reporting** in the console when
+  a paired Chromebook has not checked in for 30 minutes, so a parent notices.
 - Only Chrome web navigation is controlled. Android apps, Linux apps, guest
   mode and other browsers are out of scope.
 - Enforcement is by hostname. It does not inspect page content.

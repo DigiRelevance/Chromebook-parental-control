@@ -47,7 +47,7 @@ chpc/
 │       ├── fmt.js             formatting helpers
 │       ├── style.css          paper / ink / brass theme
 │       └── components/        SetupScreen · PinGate · KidList · KidDetail (Policy/Devices/Usage tabs) · SettingsDrawer
-├── extension/                 Chrome MV3 extension (load unpacked)
+├── extension/                 Chrome MV3 extension (Chrome Web Store, unlisted; load unpacked for development)
 │   ├── manifest.json          module service worker; permissions below
 │   ├── background.js          tick loop, DNR application, metering, messages
 │   ├── popup.html / popup.js  pairing, status, PIN-gated unpair
@@ -335,9 +335,11 @@ the host, falls back to `CHPC_WHY`, has a Go back button.
 
 ## 7. Known gaps / follow-ups
 
-1. **Extension removal by the child** is outside SCOUT's control (Developer
-   mode). Recommend supervised/managed accounts; consider publishing to the
-   Chrome Web Store (unlisted) so Family Link approval flows apply.
+1. **Extension removal by the child** is outside SCOUT's control: consumer
+   Family Link has no force-install or tamper lock. Distribution is via the
+   Chrome Web Store (unlisted) with Family Link approval; the console flags a
+   device **not reporting** after 30 minutes without a check-in. Only a
+   managed (Workspace/school) Chromebook can force-install.
 2. **Single guardian PIN**, no per-parent identity or audit trail of who changed
    what. Fine for one household; a multi-guardian model would need accounts.
 3. **Rate limiting is in-memory** and per process; restarting clears it. Good

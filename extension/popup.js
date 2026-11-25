@@ -159,3 +159,9 @@ $('forget-btn').addEventListener('click', forget);
 $('pin').addEventListener('keydown', (e) => { if (e.key === 'Enter') forget(); });
 
 paint();
+
+// Opened as a tab right after installation: show the pairing walkthrough.
+if (new URLSearchParams(location.search).has('setup')) {
+  const hint = $('setup-hint');
+  if (hint) hint.hidden = false;
+}

@@ -92,7 +92,7 @@ weakens a control; **Low** = hygiene.
 
 | Risk | Why it remains | Mitigation |
 | ---- | -------------- | ---------- |
-| **A child with Developer-mode access can disable or remove the unpacked extension.** | Chrome gives the device's user that power; an extension cannot protect itself. | Use a Family Link supervised account or an enterprise-managed device (force-install, Developer mode blocked). Watch *last seen* in the console. Documented in README, HLD §7, user guide. |
+| **A child can disable or remove the extension.** | Chrome gives the device's user that power; consumer Family Link approves installs but cannot force-install or lock. | Distributed through the Chrome Web Store with Family Link approval (a supervised account cannot sideload at all); the console flags a device **not reporting** after 30 minutes without a check-in; a managed (Workspace/school) device can force-install. Documented in README, HLD, user guide. |
 | PIN travels in clear text over the home Wi-Fi. | The server speaks HTTP; TLS termination was out of scope. | Reverse proxy with TLS + `CHPC_TRUST_PROXY=1` for anything beyond the LAN. Documented. |
 | Single shared PIN, no audit log of who changed what. | Product scope (one household). | Follow-up if multiple guardians need separate identities. |
 | Rate limits are in-memory, per process. | Simplicity; one-family scale. | Restarts clear them; a reverse proxy can add stronger limits. |
@@ -138,8 +138,9 @@ practices now hold and are worth keeping:
 
 1. Add ESLint + Prettier configs and run them in CI (kept out to avoid adding
    toolchain scope in this pass).
-2. Consider publishing the extension unlisted on the Chrome Web Store so
-   Family Link's extension approval and auto-update apply.
+2. Publish the extension unlisted on the Chrome Web Store so Family Link's
+   extension approval and auto-update apply. **Adopted**: it is the documented
+   install path; Developer mode is not available on supervised accounts.
 3. Optional: per-guardian PINs with an audit table if more than one adult
    administers the console.
 4. Optional: TLS in-process (or a documented Caddy recipe) for households that
