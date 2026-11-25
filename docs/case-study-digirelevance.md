@@ -53,7 +53,17 @@ Parental controls are built around two questions: how long can the device be
 used, and which sites are allowed. Google Family Link answers both well on a
 Chromebook, and it remains the foundation of what we use.
 
-The difficulty is the growing number of sites that are neither good nor bad. A
+Looking closely at what it could and could not do, I found two gaps.
+
+- **Websites are either allowed or blocked.** Family Link sets time limits on
+  the device and on apps, so it can limit the Chrome browser as a whole. It
+  cannot give one website a daily allowance.
+- **The activity report stops at the browser.** Time in Chrome is reported as
+  one total. It does not show how many minutes went to each site, so a new
+  games site can take up most of an evening without appearing by name.
+
+The first gap is the one that matters most, because of the growing number of
+sites that are neither good nor bad. A
 single games site gives a child a vast array of games behind one web address.
 A video site holds the revision clip a teacher recommended and hours of
 everything else. Block it and you remove something that is fine in moderation.
@@ -124,6 +134,12 @@ and Family Link asks the parent to approve it, as it would any extension. Family
 Link carries on managing the account, the device and its apps. SCOUT adds the
 finer control inside Chrome.
 
+The two cover each other's blind spots. SCOUT only sees browsing in Chrome, so
+Family Link and the Chromebook's own settings are used to keep browsing there:
+other browsers blocked and guest browsing switched off. Inside Chrome, SCOUT
+supplies what Family Link lacks: a time allowance for each site, and a
+breakdown of the day by site name.
+
 ### Private by design
 
 There is no SCOUT cloud service. The console runs on a machine the family
@@ -191,9 +207,15 @@ close it.
 4. **Chrome Web Store status.** The draft says SCOUT is installed from the
    Chrome Web Store. The user guide still shows the store link as pending first
    approval. Confirm the listing is live before publishing, or soften the line.
-5. **Family Link comparison.** The draft says Family Link handles overall time
-   and site blocking but not a time limit on an individual website. Please
-   confirm this still matches what you see in Family Link today.
-6. **CTA and category.** The button wording, link target and the new "Family
+5. **Family Link comparison.** The two gaps in "The gap in the usual controls"
+   (no per-website time limit; Chrome time reported as one total) come from the
+   research you supplied. I could not check them against Google's own
+   documentation from this session, so give them a last look in your Family
+   Link app before publishing, as Google changes these features.
+6. **Blocking other browsers and guest browsing.** The Family Link section says
+   these are switched off so that browsing stays in Chrome. Confirm that is how
+   your own Chromebooks are set up, since the case study is in the first
+   person.
+7. **CTA and category.** The button wording, link target and the new "Family
    technology" filter pill are suggestions; match them to the other case
    studies.
