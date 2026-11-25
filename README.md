@@ -20,6 +20,7 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/marfleetn/Chromebook-parental-control/badge)](https://scorecard.dev/viewer/?uri=github.com/marfleetn/Chromebook-parental-control)
 <br>
 [![extension](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmarfleetn%2FChromebook-parental-control%2Fbadges%2Fextension.json&logo=googlechrome&logoColor=white)](extension/manifest.json)
+[![store readiness](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmarfleetn%2FChromebook-parental-control%2Fbadges%2Fstore.json&logo=googlechrome&logoColor=white)](test/store-policy.test.mjs)
 [![Manifest V3](https://img.shields.io/badge/Chrome%20extension-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3)
 [![Chrome ≥ 116](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmarfleetn%2FChromebook-parental-control%2Fmain%2Fextension%2Fmanifest.json&query=%24.minimum_chrome_version&label=Chrome&prefix=%E2%89%A5%20&color=4285F4&logo=googlechrome&logoColor=white)](extension/manifest.json)
 [![Node ≥ 22](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmarfleetn%2FChromebook-parental-control%2Fmain%2Fpackage.json&query=%24.engines.node&label=Node&color=339933&logo=nodedotjs&logoColor=white)](package.json)
@@ -95,7 +96,7 @@ code from the console. Full walkthrough: [docs/USER-GUIDE.md](docs/USER-GUIDE.md
 
 ```bash
 npm install
-npm test                    # 114 tests incl. the security suite (npm run test:coverage adds thresholds)
+npm test                    # 122 tests incl. the security suite (npm run test:coverage adds thresholds)
 npm run build               # console -> web/dist, extension bundle -> extension/vendor/core.js
 CHPC_PUBLIC_DIR=web/dist npm start
 ```
@@ -192,7 +193,7 @@ for how long.
 ## Development
 
 ```bash
-npm test              # 114 tests: core, server, adversarial security suite, repo hygiene
+npm test              # 122 tests: core, server, adversarial security suite, repo hygiene
 npm run test:security # the 40 security + hygiene checks alone
 npm run test:coverage # same, failing under 95% lines / 80% branches / 95% functions
 npm run lint          # ESLint (server, core, extension, console)
@@ -216,7 +217,7 @@ version) are regenerated on the `badges` branch after each green run on `main`.
 | **Security** (`security.yml`) | `audit`, `codeql`, `secrets`, `dependency-review` | `npm audit` fails on any runtime advisory and `npm audit signatures` verifies registry signatures and provenance; CodeQL security-and-quality analysis; TruffleHog scans the whole history for verified secrets; on PRs, dependency review blocks new vulnerable or GPL/AGPL dependencies; also weekly |
 | **Security tests** (`security-tests.yml`) | `security-tests` | The adversarial suite (`npm run test:security`): authentication bypass attempts, injection and prototype pollution, information leaks, cross-child isolation, DoS limits, path traversal, rule-engine fail-closed and regex-safety invariants, and repository tripwires (manifest permissions, no phone-home, pinned actions, hardened container, dependency surface); also weekly |
 | **Scorecard** (`scorecard.yml`) | `scorecard` | OpenSSF Scorecard: independent score of supply-chain practice (pinned dependencies, token permissions, SAST, branch protection, vulnerabilities), published to scorecard.dev and the Security tab |
-| **Extension** (`extension.yml`) | `manifest`, `e2e-chromium` | Manifest V3 sanity, no inline scripts; the extension **and** the console driven end to end in a real Chromium, with screenshots and logs uploaded on failure |
+| **Extension** (`extension.yml`) | `manifest`, `store-policy`, `e2e-chromium` | Manifest V3 sanity, no inline scripts; the extension **and** the console driven end to end in a real Chromium, with screenshots and logs uploaded on failure; **store-policy** runs the Chrome Web Store readiness suite (`npm run test:store`): manifest limits, icons at every size, every permission on a justified list, no remote or dynamic code, clean package, privacy policy present |
 | **Publish** (`publish.yml`) | `image`, `extension`, `check` | multi-arch image to `ghcr.io/marfleetn/chromebook-parental-control` on `main`; on a `v*` tag, or **Run workflow** with a version from the Actions tab, also tags, builds the extension zip and publishes the GitHub Release |
 | **Dependabot auto-merge** (`dependabot-automerge.yml`) | `enable-auto-merge` | On Dependabot PRs only: turns on GitHub auto-merge for patch and minor updates, so they merge themselves once the ruleset's required checks are green; major updates wait for a human |
 
@@ -233,7 +234,7 @@ merge. Once, as the repository owner: *Settings → Rules → Rulesets → New b
 ruleset*; target `main`; enable **Require a pull request before merging**,
 **Require status checks to pass** with *Require branches to be up to date*, and
 add the checks `lint`, `test (22)`, `test (24)`, `docker`, `audit`, `codeql`,
-`secrets`, `dependency-review`, `security-tests`, `manifest`, `e2e-chromium`; enable **Block force pushes** and **Restrict
+`secrets`, `dependency-review`, `security-tests`, `manifest`, `store-policy`, `e2e-chromium`; enable **Block force pushes** and **Restrict
 deletions**; set enforcement to *Active*. From then on the Merge button stays
 disabled until every check is green. Dependabot's grouped PRs go through the
 same gate.

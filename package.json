@@ -29,7 +29,8 @@
     "test:coverage": "node --test --experimental-test-coverage --test-coverage-include='core/src/**' --test-coverage-include='server/src/**' --test-coverage-lines=95 --test-coverage-branches=80 --test-coverage-functions=95 core/test/*.mjs core/test/*.js server/test/*.js test/*.mjs",
     "ci": "npm run check && npm run lint && npm run test:coverage && npm run build",
     "test:security": "node --test core/test/security.test.mjs server/test/security.test.js test/repo-hygiene.test.mjs",
-    "brand:assets": "node scripts/brand-assets.mjs"
+    "brand:assets": "node scripts/brand-assets.mjs",
+    "test:store": "node --test test/store-policy.test.mjs"
   },
   "license": "MIT",
   "devDependencies": {

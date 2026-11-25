@@ -364,3 +364,17 @@ into `extension/icons/icon{16,32,48,128}.png` (referenced by `manifest.json`
 header mark is `web/src/components/Mark.jsx`; the lock page inlines the
 illustration. Colour tokens in `web/src/style.css`, `extension/popup.html` and
 `extension/pages/blocked.html` are the brand palette.
+
+## Chrome Web Store readiness
+
+`test/store-policy.test.mjs` (`npm run test:store`, CI job `store-policy`,
+badge *store readiness*) applies the store's automated pre-review checks to
+the exact file set the release zip ships: manifest limits (name 75,
+description 132, version shape, minimum Chrome, `homepage_url`, no
+`update_url`, known keys only), PNG icons at 16/32/48/128 with exact
+dimensions in both `icons` and `action.default_icon`, the permission set equal
+to a justified allow-list (a new permission fails until its justification is
+written in the test), no remote or dynamic code and the default CSP, a clean
+package (file types, no hidden files, size), `web_accessible_resources` limited
+to the lock page, and the privacy policy present with the data and permissions
+it must name. Single purpose and disclosure honesty remain human review.
