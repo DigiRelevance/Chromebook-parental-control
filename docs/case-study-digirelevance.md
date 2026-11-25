@@ -145,8 +145,14 @@ breakdown of the day by site name.
 There is no SCOUT cloud service. The console runs on a machine the family
 already owns: a Raspberry Pi, a spare laptop, a home storage box. It records
 the site name and the minutes, never full page addresses, searches or page
-content, and deletes usage after 90 days by default. If the home server is
-switched off, the Chromebook keeps applying the last rules it received.
+content, and deletes usage after 90 days by default.
+
+A Chromebook does not stay in the house, so the rules travel with it. Away
+from the home network it keeps applying the last rules it received, the time
+limits still count down and start afresh each midnight, and the usage from
+each day away is reported when it comes home. Families who want changes to
+reach the Chromebook wherever it is can host the console on their own server
+on the internet instead; the data still goes nowhere else.
 
 ### Honest about the limits
 
