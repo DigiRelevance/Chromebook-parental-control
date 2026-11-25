@@ -43,6 +43,15 @@ if (!secPass && !secFail) write('security.json', 'security tests', 'unknown', 'l
 else if (secFail) write('security.json', 'security tests', `${secFail} failing / ${secPass + secFail}`, 'red');
 else write('security.json', 'security tests', `${secPass} checks passing`, 'brightgreen');
 
+// ---- Chrome Web Store readiness --------------------------------------------
+const st = spawnSync(process.execPath, ['--test', '--test-reporter=tap', 'test/store-policy.test.mjs'], { cwd: root, encoding: 'utf8' });
+const stTap = (st.stdout || '') + (st.stderr || '');
+const stPass = Number(/^# pass (\d+)/m.exec(stTap)?.[1] ?? 0);
+const stFail = Number(/^# fail (\d+)/m.exec(stTap)?.[1] ?? 0);
+if (!stPass && !stFail) write('store.json', 'store readiness', 'unknown', 'lightgrey');
+else if (stFail) write('store.json', 'store readiness', `${stFail} of ${stPass + stFail} checks failing`, 'red');
+else write('store.json', 'store readiness', `${stPass} checks passing`, 'brightgreen');
+
 // ---- coverage (lines / branches / functions over core/src + server/src) -------
 const cov = spawnSync(process.execPath, ['--test', '--experimental-test-coverage',
   '--test-coverage-include=core/src/**', '--test-coverage-include=server/src/**',
