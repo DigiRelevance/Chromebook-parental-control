@@ -15,7 +15,7 @@ import {
   getSetting, setSetting,
   addUsage, usageRowsSince, usageTotalBetween, purgeUsageOlderThan, formatCode, makeCode, normalizeCode,
 } from './db.js';
-import { effectivePolicyForKid, kidStatus, dayStartMs } from './status.js';
+import { effectivePolicyForKid, kidStatus, dayStartMs, usageStampMs } from './status.js';
 import { makeRequirePin, makeRequestLimiter, RateLimiter, hashPin, pinProblem } from './auth.js';
 import {
   validatePolicy, validateName, validateAgentId, validTimeZone, clampInt, LIMITS,
@@ -218,8 +218,12 @@ export function createApp(opts = {}) {
       let seconds = Math.round(Number(e.seconds));
       if (!Number.isFinite(seconds) || seconds <= 0) seconds = 60;
       seconds = Math.min(seconds, LIMITS.usageSecondsMax);
-      // The server clock is authoritative: a device cannot back-date usage.
-      const stamp = new Date(now).toISOString();
+      // The server clock is authoritative. The one exception is `day`: a device
+      // that was out of reach files held minutes under the completed local day
+      // they belong to (bounded; see usageStampMs). Client timestamps are ignored.
+      const at = usageStampMs(e.day, now, tz);
+      if (at === null) continue;
+      const stamp = new Date(at).toISOString();
       addUsage(db, { kidId: d.kid_id, site, startedAt: stamp, endedAt: stamp, seconds });
       recorded.push({ site, seconds });
     }

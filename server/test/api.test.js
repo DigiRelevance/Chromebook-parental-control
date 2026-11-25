@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import request from 'supertest';
 import { createApp } from '../src/app.js';
+import { usageStampMs, dayStartMs } from '../src/status.js';
 import { RateLimiter, pinProblem, hashPin, verifyPinHash } from '../src/auth.js';
 import { validatePolicy, normalizePattern } from '../src/validate.js';
 import { makeCode, normalizeCode, formatCode, openDb, addUsage, purgeUsageOlderThan, createKid, getKid, usageTotalBetween, getSetting } from '../src/db.js';
@@ -478,6 +479,75 @@ test('usage reporting records + decision, server clock is authoritative', async 
   assert.equal(r.body.recorded, null);
   r = await anon.post('/api/devices/' + code + '/usage').send('nonsense');
   assert.equal(r.status, 200);
+});
+
+test('usage held while out of reach is filed under the day it happened, within bounds', async (t) => {
+  const { parent, anon, db } = fixture(t);
+  const { kidId, code } = await kidWithDevice(parent, 'Away', { dailyMinutes: 60, siteBudgets: [{ pattern: 'games.example', minutes: 30 }] });
+  const tz = (await parent.get('/api/settings')).body.timezone;
+  const day = (offset) => new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date(Date.now() + offset * 86400000));
+
+  const r = await anon.post('/api/devices/' + code + '/usage').send({
+    entries: [
+      { site: 'games.example', seconds: 1800, day: day(-2) },   // two days ago
+      { site: 'games.example', seconds: 1200, day: day(-1) },   // yesterday
+      { site: 'games.example', seconds: 600 },                  // today
+      { site: 'ancient.example', seconds: 600, day: day(-45) }, // too old: not recorded
+      { site: 'future.example', seconds: 60, day: day(3) },     // cannot be filed ahead: today
+      { site: 'junk.example', seconds: 60, day: 'last tuesday' }, // malformed: today
+      { site: 'junk2.example', seconds: 60, day: '2026-13-45' },  // not a date: today
+    ],
+  });
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.body.recorded.map((e) => e.site), ['games.example', 'games.example', 'games.example', 'future.example', 'junk.example', 'junk2.example']);
+  assert.equal(r.body.status.usedTodayMin, 13, 'only today counts against today: 10 + 1 + 1 + 1 minutes');
+
+  // Earlier days did not eat today's per-site budget.
+  const policy = (await anon.get('/api/devices/' + code)).body.policy;
+  assert.equal(policy.siteBudgets[0].used, 10);
+
+  // The history shows each day's minutes where they belong.
+  const hist = (await parent.get('/api/kids/' + kidId + '/usage/history?days=3')).body;
+  const mins = Object.fromEntries(hist.perDay.map((d) => [d.isoDay, d.minutes]));
+  assert.equal(mins[day(-2)], 30);
+  assert.equal(mins[day(-1)], 20);
+  assert.equal(mins[day(0)], 13);
+
+  // Nothing is ever stamped in the future, and client timestamps are still ignored.
+  const now = Date.now();
+  const rows = db.prepare('SELECT site, started_at FROM usage').all();
+  assert.ok(rows.every((x) => Date.parse(x.started_at) <= now + 1000));
+  assert.ok(!rows.some((x) => x.site === 'ancient.example'));
+});
+
+test('usageStampMs files a past day at its local noon in zones far from UTC', () => {
+  const now = Date.parse('2026-06-10T10:00:00Z');
+  for (const tz of ['Pacific/Kiritimati', 'Pacific/Pago_Pago', 'Europe/London', 'Asia/Kolkata']) {
+    const at = usageStampMs('2026-06-08', now, tz);
+    assert.equal(new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date(at)), '2026-06-08', tz);
+    assert.equal(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', hourCycle: 'h23' }).format(new Date(at)), '12', tz);
+  }
+  assert.equal(usageStampMs(undefined, now, 'UTC'), now);
+  assert.equal(usageStampMs(20260608, now, 'UTC'), now);
+  assert.equal(usageStampMs('2026-06-10', now, 'UTC'), now, 'today is stamped now');
+  assert.equal(usageStampMs('2026-06-11', now, 'UTC'), now, 'a future day is stamped now');
+  assert.equal(usageStampMs('2026-05-10', now, 'UTC'), usageStampMs('2026-05-10', now, 'UTC'));
+  assert.equal(usageStampMs('2026-05-09', now, 'UTC'), null, 'older than the window is refused');
+  assert.equal(usageStampMs('2026-04-01', now, 'UTC'), null);
+});
+
+test('dayStartMs is local midnight in every zone, including across a clock change', () => {
+  const at = (iso, tz) => new Date(dayStartMs(Date.parse(iso), tz)).toISOString();
+  assert.equal(at('2026-06-10T10:00:00Z', 'Europe/London'), '2026-06-09T23:00:00.000Z', 'summer time: midnight is 23:00 UTC');
+  assert.equal(at('2026-01-10T10:00:00Z', 'Europe/London'), '2026-01-10T00:00:00.000Z');
+  assert.equal(at('2026-06-10T10:00:00Z', 'America/New_York'), '2026-06-10T04:00:00.000Z');
+  assert.equal(at('2026-06-10T10:00:00Z', 'Asia/Kolkata'), '2026-06-09T18:30:00.000Z');
+  assert.equal(at('2026-06-10T10:00:00Z', 'Pacific/Kiritimati'), '2026-06-10T10:00:00.000Z', 'UTC+14: it has just turned midnight there');
+  assert.equal(at('2026-06-10T10:00:00Z', 'Pacific/Pago_Pago'), '2026-06-09T11:00:00.000Z');
+  // Clocks go forward at 01:00 on 29 March 2026 in London: midnight was still GMT.
+  assert.equal(at('2026-03-29T15:00:00Z', 'Europe/London'), '2026-03-29T00:00:00.000Z');
+  // Clocks go back at 02:00 on 25 October 2026: midnight was still summer time.
+  assert.equal(at('2026-10-25T15:00:00Z', 'Europe/London'), '2026-10-24T23:00:00.000Z');
 });
 
 test('usage batch reports', async (t) => {

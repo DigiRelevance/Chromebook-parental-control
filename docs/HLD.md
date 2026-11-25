@@ -10,7 +10,10 @@ authors internet rules in a web console; a Chrome **extension enforces** those
 rules locally on each child device and reports usage back to the API so time
 budgets are real, not just recorded. There is **no third-party cloud**: the
 machine running this repo (a laptop, a Chromebook in Linux mode, a small server
-or a Docker host) is the single source of truth.
+or a Docker host) is the single source of truth. That machine is normally on
+the home network; a family may instead host it behind TLS on an
+internet-reachable address so devices stay in live contact on other networks
+(README, "Home or remote").
 
 **Goals**
 
@@ -127,6 +130,16 @@ the server stamps rows with its own clock, caps a report at one hour, stores
 the hostname only, and returns the current status. While offline, pending
 seconds are folded into the cached policy locally so budgets keep counting.
 
+Pending seconds are kept **per local day**. When the local date moves on with
+the server still out of reach, the counters in the cached policy describe a
+day that is over: the extension zeroes them and counts only the new day's
+seconds, so daily and per-site limits start afresh at midnight (a device away
+for a week gets its limit each day, not once). Seconds from earlier days wait
+in a carry store and are reported with a `day` field; the server files a
+completed day from the last 31 at that day's local noon, stamps anything else
+with its own clock, and refuses older days. Client timestamps are still
+ignored.
+
 **5.6 Unpair from the device.** The popup's "Unpair" asks for the guardian PIN
 and verifies it with the server before clearing storage and rules. Without the
 server online, unpairing is impossible from the device.
@@ -160,7 +173,7 @@ Wi-Fi can reach the port.
 | Clickjacking / injection in the console | `Content-Security-Policy` (self only, no inline scripts), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy: no-referrer`, `Cache-Control: no-store` on the API. React escapes output; no `dangerouslySetInnerHTML`. |
 | Pairing code guessing | CSPRNG, 8 chars / 22 letters; unknown-code lookups rate-limited per address (20 per 15 min). Codes are revocable bearer credentials — treat like a password. |
 | Input abuse | Strict validation: allow-listed policy keys, list caps (500), pattern length cap, host-shape check, integer bounds, JSON body limit 256 kB, malformed JSON → 400. |
-| Usage tampering | Server clock is authoritative (client timestamps ignored); one report capped at 3600 s; only the device's own code can report. A device can over-report (locking itself out sooner) but never under-report. |
+| Usage tampering | Server clock is authoritative (client timestamps ignored); one report capped at 3600 s; only the device's own code can report. A report can only add usage, never remove it. A device may label a report with a completed local day from the last 31 (so time spent out of reach is filed where it happened); it cannot file into the future or further back. A tampered device could mislabel today's minutes as an earlier day, which is no stronger than its existing ability to not report at all. |
 | Child defeats the extension | Unpairing requires the PIN. The extension is distributed through the Chrome Web Store (unlisted) and installed with Family Link approval; a supervised account cannot sideload. Consumer Family Link cannot force-install or prevent removal, so the console flags a device as **not reporting** after 30 minutes without a check-in; only a managed (Workspace/school) Chromebook can lock it. Documented limitation. |
 | Data exposure at rest | SQLite file created `0600` in a `0700` directory; hostnames only, never URLs; retention purge; delete-child cascades. Back-ups are the operator's responsibility. |
 | Transport | Plain HTTP on the LAN by design. For remote access, terminate TLS at a reverse proxy and set `CHPC_TRUST_PROXY=1` so rate limits key on the real client IP. |
@@ -195,7 +208,8 @@ Wi-Fi can reach the port.
 | D3 | Policy as a validated JSON document | Parents' rules are free-form; migrations stay trivial; validation keeps the stored shape exactly what the engine reads. |
 | D4 | Hostname matching, subdomain-inclusive, boundary-safe | Matches parent intuition ("I meant the whole site") without lookalike leaks. |
 | D5 | Code-only pairing, PIN-gated unpair | Zero credentials typed on child devices beyond the code; the child cannot silently opt out. |
-| D6 | Usage metered on the device, stamped by the server | Enforcement and metering live where browsing happens; the server clock prevents back-dating. |
+| D6 | Usage metered on the device, stamped by the server | Enforcement and metering live where browsing happens; the server clock prevents arbitrary back-dating. The single exception is a bounded `day` label for minutes held while out of reach, without which a returning device would either lose its history or have days of usage charged to the day it reconnects. |
+| D11 | Home-hosted by default, remote hosting supported | The extension only knows the address it was paired with, so the same build serves a LAN address or an HTTPS address on the internet. Home keeps exposure minimal; remote keeps devices live on any network at the cost of an internet-facing console guarded by the PIN. Enforcement never depends on the choice: the device enforces from its cache either way. |
 | D7 | declarativeNetRequest with per-minute recomputation | MV3 cannot block from `webRequest`; DNR has no time conditions, so time is evaluated in the engine each minute and expressed as rule presence. |
 | D8 | Rich regex rules with reason, plain rules as fallback, fail-closed last | The child sees *why*; Chrome's 2 kB compiled-regex budget and future API changes cannot leave the browser open. |
 | D9 | Hostnames only, 90-day retention | Data minimisation for a child's browsing record; enough for budgets and a week's history. |

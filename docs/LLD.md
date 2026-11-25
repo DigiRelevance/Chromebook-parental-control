@@ -143,6 +143,9 @@ all + local allows; `minimalBlockRules()` = one block-all rule (last resort).
 
 `core/test/security.test.mjs` (9): fail-closed and regex-safety invariants (see
 SECURITY-REPORT §10). `test/repo-hygiene.test.mjs` (11): repository tripwires.
+`core/test/usage.test.mjs` (8): day roll-over, carry pruning, batching in
+one-hour chunks, settling, offline policy reset at local midnight, junk and
+clock-skew tolerance.
 `core/test/policy.test.js` (17: incl. offline usage fold, DST, helpers): parsing, windows, each decision code, local
 bypass, non-web schemes. `core/test/rules.test.mjs` (24): Chrome schema
 assertions on every rule set, both flavours, each priority band, time
@@ -247,14 +250,16 @@ for non-API GETs that accept HTML.
 | `CHPC_CORS_ORIGINS` | none | comma-separated allowed origins |
 | `CHPC_TRUST_PROXY` | off | `1` behind a reverse proxy |
 
-### 3.6 Tests (`server/test/api.test.js`, 32; `server/test/security.test.js`, 20 adversarial)
+### 3.6 Tests (`server/test/api.test.js`, 35; `server/test/security.test.js`, 20 adversarial)
 
 Auth (401/429/503, Bearer), first-run setup (code file, wrong/weak/right,
 single use, restart pickup, rate limit), PIN change (db vs env), scrypt
 helpers, rate limits, headers/CORS, malformed/oversize
 bodies, settings, kids CRUD + name rules, policy normalisation + 25 rejected
 shapes, pairing flow + code normalisation + revoke, usage single/batch/caps/
-server clock/hostname-only, today + history aggregation, cascade delete,
+server clock/hostname-only, held days filed under their own date within
+bounds, local-midnight day start across zones and clock changes, today +
+history aggregation, cascade delete,
 retention purge, static console fallback.
 
 ## 4. @chpc/web
@@ -283,17 +288,24 @@ for http/https. No inline scripts anywhere (MV3 CSP; enforced by `build:ext`).
 
 **Storage keys** (`chrome.storage.local`): `apiBase`, `pairingCode`, `kidName`,
 `cachedPolicy`, `lastSuccess`, `lastFail`, `lastError`, `tz`, `pendingUsage`
-(`{host: seconds}`), `lastRules` (signature of the applied set), `lastBlock`
+(`{host: seconds}` for the local day in `pendingDay`), `pendingDay`
+(`YYYY-MM-DD`), `carryUsage` (`{day: {host: seconds}}`, earlier days not yet
+reported, at most 31 days), `lastRules` (signature of the applied set), `lastBlock`
 (current block-all reason), `ruleMode` (`regex`|`path`), `ruleCount`.
 
 **Tick** (alarm every minute, also on install/start-up, pairing change and
 popup refresh; serialised):
 1. not paired → remove all dynamic rules, stop;
-2. meter: +60 s to the focused active tab's hostname if `chrome.idle` is `active`;
-3. flush `pendingUsage` as one batch; keep it on failure;
+2. roll the usage day: if the local date changed, move `pendingUsage` into
+   `carryUsage` under its day and drop carry older than 31 days; then meter:
+   +60 s to the focused active tab's hostname if `chrome.idle` is `active`;
+3. flush one batch (carry days first, each entry at most an hour, with its
+   `day`; then today's); keep whatever was not accepted;
 4. `GET /api/devices/:code` → cache policy, tz, kid name; `404` → forget
    pairing (parent revoked); other failures → mark offline;
-5. rules from the cached policy (offline: with local pending usage folded in);
+5. rules from the cached policy (offline: `offlinePolicy()` zeroes the cached
+   usage counters when the local day is later than the day of the last
+   successful fetch, then folds in today's pending usage);
    apply only when the signature changed; regex flavour → path flavour →
    fail-closed → minimal block. Counts are read back from Chrome.
 6. no policy ever and offline > 10 min → fail-closed.

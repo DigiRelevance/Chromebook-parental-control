@@ -8,20 +8,65 @@
 import { remainingDaily, ruleMatchesHost } from '@chpc/core';
 import * as dbm from './db.js';
 
-/**
- * Epoch-ms of local midnight for `tz` at time `now`.
- * Locale-free: builds parts with Intl, then Date.parse on an exact ISO string.
- */
-export function dayStartMs(now, tz) {
+/** Offset of `tz` from UTC at instant `ms`, in ms (east of Greenwich is positive). */
+function tzOffsetMs(ms, tz) {
   const fmt = new Intl.DateTimeFormat('en-US', {
     timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
   });
   const p = {};
-  for (const { type, value } of fmt.formatToParts(new Date(now))) p[type] = value;
+  for (const { type, value } of fmt.formatToParts(new Date(ms))) p[type] = value;
   const localAsUTC = Date.parse(`${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}Z`);
-  const offset = localAsUTC - new Date(now).setMilliseconds(0); // tz offset at now
-  return Date.parse(`${p.year}-${p.month}-${p.day}T00:00:00Z`) + offset;
+  return { offset: localAsUTC - Math.floor(ms / 1000) * 1000, date: `${p.year}-${p.month}-${p.day}` };
+}
+
+/**
+ * Epoch-ms of local midnight for `tz` at time `now`.
+ * Locale-free: builds parts with Intl, then Date.parse on an exact ISO string.
+ * Local midnight is the wall-clock midnight minus the zone's offset; the
+ * offset is re-read at the answer so a clock change during the day is honoured.
+ */
+export function dayStartMs(now, tz) {
+  const { offset, date } = tzOffsetMs(now, tz);
+  const wallMidnight = Date.parse(`${date}T00:00:00Z`);
+  const guess = wallMidnight - offset;
+  return wallMidnight - tzOffsetMs(guess, tz).offset;
+}
+
+/** How far back a device may file usage it metered while out of reach. */
+export const BACKDATE_DAYS = 31;
+const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function localDate(ms, tz) {
+  const p = {};
+  const fmt = new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' });
+  for (const { type, value } of fmt.formatToParts(new Date(ms))) p[type] = value;
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+/**
+ * Timestamp for a usage entry a device reports for local day `day`.
+ *
+ * A device that was away from the console holds its minutes and reports them
+ * later with the day they were metered on. Only a completed day in the recent
+ * past is honoured, filed at that day's local noon:
+ *   - no day, a malformed day, today or a future day -> `now`
+ *   - a day more than BACKDATE_DAYS ago              -> null (not recorded)
+ * So a report can never land in the future, and never further back than the
+ * window.
+ */
+export function usageStampMs(day, now, tz) {
+  if (typeof day !== 'string' || !DAY_RE.test(day)) return now;
+  const noonUtc = Date.parse(day + 'T12:00:00Z');
+  if (!Number.isFinite(noonUtc)) return now;
+  if (day >= localDate(now, tz)) return now;
+  if (day < localDate(now - BACKDATE_DAYS * 86400000, tz)) return null;
+  // Local noon of `day`: zones far from UTC put UTC noon on a neighbouring date.
+  for (const shift of [0, -12, 12]) {
+    const t = noonUtc + shift * 3600000;
+    if (localDate(t, tz) === day) return Math.min(now, dayStartMs(t, tz) + 12 * 3600000);
+  }
+  return now;
 }
 
 /** Stored policy for a kid, with today's usage injected (minutes). */

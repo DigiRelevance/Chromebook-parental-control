@@ -13,8 +13,11 @@ this is the only document you need.*
 - **Usage metering**: the Chromebook counts a minute for every minute a site is
   open in the focused window while the child is active, so daily and per-site
   limits are based on real use.
-- **No cloud**: everything lives on your own machine. If the server is off, the
-  Chromebook keeps enforcing the last rules it knew about.
+- **No cloud**: everything lives on your own machine. If the server is off or
+  the Chromebook is on another network, it keeps enforcing the last rules it
+  knew about, and daily and per-site limits still count down and start afresh
+  each midnight. If you want rule changes and usage to keep flowing when the
+  Chromebook is away, see [Using SCOUT away from home](#using-scout-away-from-home).
 
 ## What you can control
 
@@ -177,6 +180,111 @@ Workspace with Chrome management) can do that. So:
 Unpairing from inside the popup requires the guardian PIN, and only works while
 the console is reachable, so the child cannot quietly opt out that way.
 
+## Using SCOUT away from home
+
+A Chromebook does not stay in the house. There are two ways to run SCOUT, and
+you can move from the first to the second later.
+
+### Option 1 — server at home (the default)
+
+Nothing extra to set up. When the Chromebook is on another network (school,
+grandparents, a holiday):
+
+- **the rules still apply**: blocked sites, approved sites, allowed hours and
+  off days all carry on from the last rules the Chromebook received;
+- **time limits still work**: the Chromebook counts minutes itself, and the
+  daily limit and per-site limits start afresh at midnight each day, exactly
+  as they do at home;
+- **changes you make do not arrive** until the Chromebook is back on the home
+  network, and the console shows it as **not reporting** in the meantime;
+- **usage catches up afterwards**: when it reconnects, the minutes from each
+  day away appear in the Usage tab under the day they happened (up to 31 days
+  back). They do not count against the limit for the day it comes home.
+
+### Option 2 — server reachable from anywhere
+
+If you want rule changes to arrive within a minute wherever the Chromebook is,
+and usage to report as it happens, run the server where the Chromebook can
+always reach it: a small cloud server (a few pounds a month), with a web
+address of your own and HTTPS.
+
+**What changes, honestly.** The console is then on the internet, not just your
+home network. Your family's rules and usage still sit only on a server you
+control, and nobody else receives them, but the guardian PIN becomes the only
+thing between the internet and your console. Use a long PIN that you use
+nowhere else. After ten wrong attempts from one address SCOUT locks that
+address out for 15 minutes.
+
+**Setup.**
+
+1. Rent the smallest Ubuntu server from any provider and note its IP address.
+2. Where your domain's DNS is managed, add an **A record** for a name such as
+   `scout.example.com` pointing at that IP address.
+3. Log in to the server and install Docker:
+
+   ```bash
+   curl -fsSL https://get.docker.com | sh
+   ```
+
+4. Create a folder and a file called `docker-compose.yml` in it with the
+   following, replacing `scout.example.com` with your own name. The second
+   service, Caddy, provides HTTPS and fetches its certificate automatically.
+
+   ```yaml
+   services:
+     chpc:
+       image: ghcr.io/marfleetn/chromebook-parental-control:latest
+       environment:
+         CHPC_TRUST_PROXY: "1"
+       volumes:
+         - chpc-data:/data
+       restart: unless-stopped
+
+     caddy:
+       image: caddy:2
+       command: caddy reverse-proxy --from scout.example.com --to chpc:4100
+       ports:
+         - "80:80"
+         - "443:443"
+       volumes:
+         - caddy-data:/data
+       restart: unless-stopped
+
+   volumes:
+     chpc-data:
+     caddy-data:
+   ```
+
+5. Start it and read the setup code:
+
+   ```bash
+   docker compose up -d
+   ```
+
+   ```bash
+   docker compose logs chpc
+   ```
+
+6. Open `https://scout.example.com`, enter the setup code and choose your PIN.
+   Add your children and rules as usual.
+7. Pair each Chromebook using `https://scout.example.com` as the console
+   address. A Chromebook that was paired with a home address must be unpaired
+   and paired again with the new one.
+
+**Rules for remote hosting.**
+
+- Always `https://`. Never open port 4100 to the internet directly: the PIN
+  would travel unprotected.
+- Keep `CHPC_TRUST_PROXY: "1"` as shown, so lockouts apply to the real visitor
+  and not to the proxy.
+- Keep the server updated: `docker compose pull && docker compose up -d`.
+- Moving an existing home installation? Copy the database file across before
+  first start, or simply set the rules up again.
+
+Already have a machine at home and prefer not to rent one? A tunnel or reverse
+proxy that gives the home server an HTTPS address works the same way; the
+Chromebook only needs an `https://` address it can reach from any network.
+
 ## Day to day
 
 | Want to… | Do this |
@@ -224,6 +332,8 @@ When a page is blocked the child sees a lock page naming the site and one of:
 | A site I blocked still opens | Match is by site name: `bbc.co.uk` blocks `www.bbc.co.uk` and `news.bbc.co.uk`, but not `bbc.com`. Add each. |
 | Rules changed but the Chromebook still acts on old ones | It refreshes every minute. The popup's **Refresh now** forces it. |
 | Wrong day boundary / off day starts at the wrong time | Check the time zone in **Settings**. |
+| Chromebook was away and its usage looks missing | It reports when it next reaches the console; each day away then appears under its own date. Days more than 31 days old are not recorded. |
+| Rule changes do not reach a Chromebook that is away from home | Expected with the server at home. See [Using SCOUT away from home](#using-scout-away-from-home). |
 | Locked out after too many PIN attempts | Wait 15 minutes, or restart the server. |
 | Using a normal laptop instead of a Chromebook | Works the same: install Chrome, load the same `extension/` folder unpacked. |
 
@@ -237,7 +347,10 @@ When a page is blocked the child sees a lock page naming the site and one of:
   never full page addresses, searches or page content.
 - Usage older than **90 days** is deleted automatically
   (`CHPC_RETENTION_DAYS` changes this).
-- Nothing leaves your home network: no accounts, no telemetry, no cloud.
+- Nothing goes to anyone else: no accounts, no telemetry, no third-party
+  cloud. With the server at home, nothing leaves your home network. If you
+  choose to host it remotely, the same data travels over HTTPS to that server
+  of yours and nowhere else.
 - Deleting a child deletes everything about them immediately.
 - The full statement is [PRIVACY.md](../PRIVACY.md) in the repository; it is
   also the privacy policy linked from the Chrome Web Store listing.

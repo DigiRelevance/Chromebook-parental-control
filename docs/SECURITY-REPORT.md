@@ -197,7 +197,7 @@ Writing the suite found one defect: `decide()` threw on a policy whose `allow`,
 document, but a thrown decision is a fail-open path for any caller that catches
 and continues, so the engine now treats non-array fields as empty.
 
-Total automated checks: 122, of which 40 are security and hygiene assertions.
+Total automated checks at that date: 122, of which 40 are security and hygiene assertions.
 
 ## 11. How to re-verify
 
@@ -208,3 +208,37 @@ npm run check && npm test && npm run build && npm audit --omit=dev
 npm i -D playwright && npx playwright install chromium
 npm run e2e:ext && npm run e2e:web
 ```
+
+## 12. Addendum — usage while away from the console, and remote hosting (2026-11-25)
+
+**Defects fixed.**
+
+| # | Severity | Finding | Fix |
+| - | -------- | ------- | --- |
+| U1 | Medium | While the console was out of reach the extension kept adding metered seconds to the usage counters cached from the last sync and never started a new day. A Chromebook away for several days got its daily and per-site limits once for the whole absence. Fail-strict, but wrong. | Pending seconds are kept per local day; `offlinePolicy()` zeroes the cached counters once the local date has moved past the day of the last sync. |
+| U2 | Medium | On reconnecting, everything metered while away was stamped with the server's clock, so days of usage were charged to the day the device came home, and anything above an hour per site was discarded by the per-report cap. | Earlier days are reported with a `day` label in one-hour entries. The server files a completed local day from the last 31 at that day's noon; a missing, malformed, current or future day is stamped now; an older day is refused. |
+| U3 | Medium | `dayStartMs()` applied the time-zone offset with the wrong sign, so "today" began at 02:00 local time during British Summer Time (and at the wrong hour in any zone not on UTC). Daily counters, the Usage tab and the history bars used that boundary. | Local midnight is now wall-clock midnight minus the offset, re-read at the answer so clock-change days are right. Tested for six zones and both UK clock changes. |
+
+**Change to a control.** §3 S5 and the HLD said the server clock alone stamps
+usage. That still holds for every client timestamp. The new `day` label is a
+narrow, bounded exception: past days only, 31 days at most, never the future.
+A device that has been tampered with could label today's minutes as
+yesterday's; it could already decline to report them, so this grants nothing
+new. A report can still only add usage.
+
+**Remote hosting.** Running the server on an internet-reachable address is now
+a documented option (README "Home or remote", user guide "Using SCOUT away
+from home"). It changes the exposure, not the code:
+
+| Risk | Control |
+| ---- | ------- |
+| The console and parent API are reachable by anyone. | Guardian PIN on every parent request; ten failures per address lock that address out for 15 minutes; weak PINs refused. The documentation asks for a long PIN used nowhere else. A single shared PIN with in-memory rate limits (§6) matters more here than on a LAN. |
+| PIN and pairing codes in transit. | HTTPS is required for remote hosting; the plain HTTP port must not be published. The example puts Caddy in front and does not publish port 4100. |
+| Lockouts keyed on the proxy's address. | `CHPC_TRUST_PROXY=1` in the documented setup. |
+| Pairing-code guessing from the internet. | Unchanged: CSPRNG codes, unknown-code lookups limited per address. |
+
+Not done: per-guardian accounts, a second factor, or persistent rate limits.
+They remain the recommended next steps for anyone hosting remotely. The
+documented Caddy setup has not been exercised by the automated suite.
+
+Total automated checks: 133, of which 40 are security and hygiene assertions.

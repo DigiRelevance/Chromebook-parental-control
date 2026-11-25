@@ -6,7 +6,7 @@ SCOUT console and server published at
 
 **In one paragraph.** SCOUT is self-hosted. The extension on a child's
 Chromebook talks to exactly one place: the server address a parent typed in
-when pairing, which is a computer the parent runs at home. It sends the site
+when pairing, which is a computer the parent runs, normally at home. It sends the site
 names the child visits and the minutes spent on them, and it receives the
 rules the parent set. The people who publish SCOUT run no servers, receive no
 data and cannot see any family's rules or usage. There are no accounts, no
@@ -23,7 +23,7 @@ any installation and are not a processor of its data.
 
 | Data | Where it goes | Why | Kept for |
 | --- | --- | --- | --- |
-| The **site name** (hostname, such as `youtube.com`) of the active tab, and the **minutes** spent on it, counted once a minute only while the browser window is focused and the child is active | The parent's own server | Daily limits, per-site time budgets and the usage view in the parent console | On the server: 90 days by default, then deleted automatically (the parent can change this). On the Chromebook: until the next successful send |
+| The **site name** (hostname, such as `youtube.com`) of the active tab, and the **minutes** spent on it, counted once a minute only while the browser window is focused and the child is active | The parent's own server | Daily limits, per-site time budgets and the usage view in the parent console | On the server: 90 days by default, then deleted automatically (the parent can change this). On the Chromebook: until the next successful send; minutes that could not be sent are dropped after 31 days |
 | The **address of each navigation** | Nowhere. It is matched inside Chrome against the current rules by Chrome's own blocking mechanism (declarativeNetRequest) | To allow, block or redirect to the lock page | Not stored |
 | **Pairing details**: the console address, the pairing code, the child's first name as the parent entered it, the current rules, the time zone, sync status, and the last blocked site name with its reason | Chrome's local extension storage on that Chromebook only | To apply the rules, show the popup and explain a block on the lock page | Until the extension is unpaired or removed |
 | A **"last seen"** timestamp | The parent's own server | So the parent can see the device is connected | Until the device is unpaired |
@@ -56,8 +56,11 @@ retention setting. Deleting a child deletes everything about them at once.
 Unpairing a device stops all reporting from it immediately.
 
 By default the console is reachable only on the home network over plain HTTP.
-Parents who open it to the internet should put it behind HTTPS, as the user
-guide describes.
+A parent may instead choose to host their server where it can be reached from
+the internet, so that a Chromebook stays in contact on other networks. The
+same data then travels to that server and nowhere else; such a server must be
+put behind HTTPS, as the user guide describes. In both cases the server is
+the parent's own and the SCOUT maintainers have no access to it.
 
 ## Sharing and third parties
 
