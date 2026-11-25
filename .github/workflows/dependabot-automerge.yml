@@ -14,7 +14,7 @@ permissions:
 jobs:
   enable:
     name: enable-auto-merge
-    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'marfleetn/Chromebook-parental-control'
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'DigiRelevance/Chromebook-parental-control'
     runs-on: ubuntu-latest
     permissions:
       contents: write

@@ -46,7 +46,7 @@ whichever of these you find easier.
 Open a terminal and paste:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/DigiRelevance/Chromebook-parental-control/main/install.sh | sudo bash
 ```
 
 Wait a minute or two. At the end it prints:
@@ -63,7 +63,7 @@ SCOUT now starts by itself whenever the machine boots. Handy commands later:
 On Linux, macOS or a NAS shell:
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/docker-compose.yml
+curl -fsSLO https://raw.githubusercontent.com/DigiRelevance/Chromebook-parental-control/main/docker-compose.yml
 docker compose up -d
 docker compose logs chpc
 ```
@@ -73,7 +73,7 @@ is an alias for `Invoke-WebRequest` and rejects the Linux flags (the error
 mentions `fsSLO`), so download the file this way:
 
 ```powershell
-Invoke-WebRequest https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/docker-compose.yml -OutFile docker-compose.yml
+Invoke-WebRequest https://raw.githubusercontent.com/DigiRelevance/Chromebook-parental-control/main/docker-compose.yml -OutFile docker-compose.yml
 docker compose up -d
 docker compose logs chpc
 ```
@@ -233,7 +233,7 @@ address out for 15 minutes.
    ```yaml
    services:
      chpc:
-       image: ghcr.io/marfleetn/chromebook-parental-control:latest
+       image: ghcr.io/digirelevance/chromebook-parental-control:latest
        environment:
          CHPC_TRUST_PROXY: "1"
        volumes:

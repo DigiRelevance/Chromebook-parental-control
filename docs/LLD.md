@@ -325,7 +325,7 @@ the host, falls back to `CHPC_WHY`, has a Go back button.
 - `Dockerfile` — multi-stage `node:22-alpine`: build console → slim runtime,
   `npm ci --omit=dev`, non-root `chpc` user, `/data` volume, health check.
 - `docker-compose.yml` — one service from the **prebuilt image**
-  `ghcr.io/marfleetn/chromebook-parental-control:latest`; no PIN needed up
+  `ghcr.io/digirelevance/chromebook-parental-control:latest`; no PIN needed up
   front (first-run setup; code in `docker compose logs`). Hardened: read-only
   root FS, all capabilities dropped, `no-new-privileges`.
   `docker-compose.build.yml` overrides to build from source.
