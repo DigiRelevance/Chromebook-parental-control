@@ -36,3 +36,6 @@ apps; anything that requires the guardian PIN.
   up -d --build`), and run `npm run audit:prod`.
 - Use supervised (Family Link) or managed accounts on the Chromebooks so the
   extension cannot be disabled.
+
+What the software records, where it goes and for how long is set out in
+[PRIVACY.md](PRIVACY.md).

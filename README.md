@@ -168,7 +168,9 @@ Docker reads them from `.env`.
   mode and other browsers are out of scope.
 - Enforcement is by hostname. It does not inspect page content.
 
-See [docs/SECURITY-REPORT.md](docs/SECURITY-REPORT.md) for the full assessment.
+See [docs/SECURITY-REPORT.md](docs/SECURITY-REPORT.md) for the full assessment and
+[PRIVACY.md](PRIVACY.md) for what the extension and server record, where it goes and
+for how long.
 
 ## Development
 
@@ -279,7 +281,7 @@ operating system secure and up to date; reviewing the policies you configure;
 and complying with the laws that apply to you, including those on the
 monitoring of minors and on personal data. Browsing hostnames and usage
 minutes recorded by SCOUT are personal data about your child and stay on the
-server you run; you are the controller of that data.
+server you run; you are the controller of that data (see [PRIVACY.md](PRIVACY.md)).
 
 This notice is a plain-language summary and does not replace the licence
 terms. It is not legal advice; if you intend to distribute SCOUT, offer it as a
