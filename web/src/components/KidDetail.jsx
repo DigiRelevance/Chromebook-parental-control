@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { api } from "../api.js";
-import { statusPill, fmtMin, fmtLastSeen, usagePercent, WEEKDAYS } from "../fmt.js";
+import { statusPill, fmtMin, fmtLastSeen, usagePercent, WEEKDAYS, quietDevices } from "../fmt.js";
 
 const MODES = [
   { id: "unrestricted", label: "Everything allowed (except blocked sites)" },
@@ -328,6 +328,7 @@ function DevicesTab({ kidId, onChanged }) {
                   <div><strong>{d.agentId}</strong> <span className="mono" style={{ marginLeft: 8 }}>{d.codeDisplay}</span></div>
                   <div style={{ fontSize: ".78rem", color: "var(--ink-soft)", marginTop: 2 }}>
                     paired {fmtLastSeen(d.pairedAt)} · {d.lastSeen ? `last seen ${fmtLastSeen(d.lastSeen)}` : "never connected yet"}
+                    {quietDevices([d]).length > 0 && <span style={{ color: "var(--warn)", fontWeight: 600 }}> · not reporting</span>}
                   </div>
                 </div>
                 <button className="btn danger small" onClick={() => revoke(d)}>Unpair</button>
@@ -335,13 +336,18 @@ function DevicesTab({ kidId, onChanged }) {
             ))}
           </ul>
         )}
+        {quietDevices(list).length > 0 && (
+          <p style={{ fontSize: ".84rem", color: "var(--ink-soft)", marginBottom: 0 }}>
+            <strong>Not reporting</strong> means the Chromebook has not checked in for over 30 minutes. If it is switched on and online, the extension has probably been disabled or removed: Family Link cannot stop a child doing that. Reinstall it from the Chrome Web Store with your approval and pair again.
+          </p>
+        )}
       </div>
 
       <div className="card">
         <h3>Pair a new Chromebook</h3>
         <ol style={{ fontSize: ".9rem", color: "var(--ink-soft)", paddingLeft: 20, marginTop: 0 }}>
           <li>Give the device a name and click <strong>Generate code</strong>.</li>
-          <li>On the Chromebook, open the SCOUT extension, enter this console&apos;s address and the code.</li>
+          <li>On the Chromebook, signed in as the child, install SCOUT from the Chrome Web Store (approve it through Family Link), open it and enter this console&apos;s address and the code.</li>
           <li>The code is that device&apos;s key — anyone who has it can read this child&apos;s rules. Unpair to revoke it.</li>
         </ol>
         <div className="row" style={{ marginTop: 8 }}>

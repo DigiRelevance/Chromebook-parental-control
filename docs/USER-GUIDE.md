@@ -134,30 +134,45 @@ device the console locks that device out for 15 minutes.
    address to type in. The code is that Chromebook's key: whoever has it can
    read the child's rules and report usage as that device. Revoke it from the
    same tab if it leaks.
-2. On the Chromebook, signed in as the child:
-   - copy the `extension/` folder from this repo onto the Chromebook (Files app,
-     a USB stick, or download the repo zip);
-   - open `chrome://extensions`, switch **Developer mode** on (top right),
-     click **Load unpacked**, pick the `extension` folder;
-   - pin the *SCOUT* icon (puzzle-piece menu → pin) and click it;
-   - enter the **console address** (`http://SERVER-IP:4100`) and the **pairing
-     code**, click **Pair & connect**. The popup should say *Paired* and show
-     the child's name.
-3. Back in the console, the Devices tab shows *last seen just now* within a
+2. Once, in the **Family Link** app or site: *Controls → Google Chrome and
+   Web → Advanced settings* and make sure *Permissions for sites, apps and
+   extensions* is set so the child can ask you to approve installations.
+3. On the Chromebook, signed in as the child, open the SCOUT listing on the
+   Chrome Web Store: `https://chromewebstore.google.com/detail/scout/<extension-id>` (the link is added here after the first
+   store approval) and click **Add to Chrome**. Family Link asks for a parent:
+   choose **Ask in person**, enter your Google password, and the extension
+   installs. A pairing screen opens by itself.
+4. On that screen enter the **console address** (`http://SERVER-IP:4100`) and
+   the **pairing code**, click **Pair & connect**. It should say *Paired* and
+   show the child's name. Pin the *SCOUT* icon (puzzle-piece menu → pin) so the
+   child can see the current rules.
+5. Back in the console, the Devices tab shows *last seen just now* within a
    minute. Type a site into **Test a decision** to see what the Chromebook will
    do with it right now.
 
+Why the store and not "Load unpacked"? A Family Link supervised account cannot
+use Developer mode: ChromeOS blocks it by policy, the parent has no switch to
+allow it, and turning supervision off and on again wipes anything sideloaded in
+between (and for under-13s supervision cannot be switched off at all). The
+`extension/` folder in the repository is for developers testing on an
+unsupervised profile.
+
 ### Important: what the extension cannot stop
 
-The extension is installed in Developer mode. A child who can open
-`chrome://extensions` can switch it off or remove it. To close that door:
+Family Link approves the installation, but consumer Family Link cannot
+force-install an extension or stop a child switching it off or removing it in
+`chrome://extensions`. Only a managed Chromebook (a school, or your own Google
+Workspace with Chrome management) can do that. So:
 
-- use a **Family Link supervised account** for the child on the Chromebook
-  (it restricts extensions and Developer mode), or a school/enterprise-managed
-  device that force-installs the extension;
+- the console marks a Chromebook **not reporting** when it has not checked in
+  for 30 minutes (home screen pill and the Devices tab). A Chromebook that is
+  switched off or offline looks the same, so treat it as a prompt to look, not
+  proof of tampering; if the device is on and online, the extension was
+  disabled or removed: reinstall it from the store with your approval and
+  pair again;
 - do **not** give the child the owner account of the Chromebook;
-- check the **Devices** tab now and then: *last seen* going stale means the
-  extension has stopped talking to the console.
+- say plainly to the child that the rules are there and that removing the
+  extension is visible.
 
 Unpairing from inside the popup requires the guardian PIN, and only works while
 the console is reachable, so the child cannot quietly opt out that way.
@@ -201,6 +216,8 @@ When a page is blocked the child sees a lock page naming the site and one of:
 | Console shows *server offline* | Is the server running? Same Wi-Fi? Right IP and port 4100? |
 | Console shows "set up your PIN" again | The PIN was reset, or the database was moved. Use the setup code from `sudo chpc status` / the server log. |
 | Lost the setup code | `sudo chpc status` shows it while setup is pending; or restart the server for a fresh one. |
+| A device shows **not reporting** | The Chromebook has not checked in for 30 minutes. If it is on and online, open `chrome://extensions` on it: SCOUT has been switched off or removed. Reinstall from the Chrome Web Store (parent approval), pair again. |
+| "Add to Chrome" is greyed out or the child cannot ask for approval | In Family Link: *Controls → Google Chrome and Web → Advanced settings → Permissions for sites, apps and extensions*. |
 | Popup says the code is not recognised | Codes are letters only, no digits — retype it, or revoke and generate a new one. Check the console address (include `http://`). |
 | Child can browse but no limits apply | Devices tab: is *last seen* recent? If not, the extension is off, unpaired or cannot reach the server. Reload it from `chrome://extensions`. |
 | Usage stays at 0 | Minutes are only counted while the child is active in a focused Chrome window. If it stays at 0 while they browse, see the previous row. |

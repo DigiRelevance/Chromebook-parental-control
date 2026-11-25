@@ -215,7 +215,15 @@ function ensureAlarm() {
   });
 }
 
-chrome.runtime.onInstalled.addListener(() => { ensureAlarm(); tick({ meter: false }).catch(() => {}); });
+chrome.runtime.onInstalled.addListener((details) => {
+  ensureAlarm();
+  tick({ meter: false }).catch(() => {});
+  // Installed from the Chrome Web Store (or loaded for the first time): open the
+  // pairing screen in a tab so the parent does not have to find the toolbar icon.
+  if (details && details.reason === 'install') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('popup.html?setup=1') }).catch(() => {});
+  }
+});
 chrome.runtime.onStartup.addListener(() => { ensureAlarm(); tick({ meter: false }).catch(() => {}); });
 chrome.alarms.onAlarm.addListener((a) => { if (a.name === ALARM_TICK) tick().catch(() => {}); });
 

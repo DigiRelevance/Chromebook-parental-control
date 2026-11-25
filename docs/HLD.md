@@ -161,7 +161,7 @@ Wi-Fi can reach the port.
 | Pairing code guessing | CSPRNG, 8 chars / 22 letters; unknown-code lookups rate-limited per address (20 per 15 min). Codes are revocable bearer credentials — treat like a password. |
 | Input abuse | Strict validation: allow-listed policy keys, list caps (500), pattern length cap, host-shape check, integer bounds, JSON body limit 256 kB, malformed JSON → 400. |
 | Usage tampering | Server clock is authoritative (client timestamps ignored); one report capped at 3600 s; only the device's own code can report. A device can over-report (locking itself out sooner) but never under-report. |
-| Child defeats the extension | Unpairing requires the PIN. Disabling/removing an unpacked extension in Developer mode is **not** preventable by SCOUT: use a supervised (Family Link) or enterprise-managed Chrome account that blocks Developer mode / force-installs the extension. Documented limitation. |
+| Child defeats the extension | Unpairing requires the PIN. The extension is distributed through the Chrome Web Store (unlisted) and installed with Family Link approval; a supervised account cannot sideload. Consumer Family Link cannot force-install or prevent removal, so the console flags a device as **not reporting** after 30 minutes without a check-in; only a managed (Workspace/school) Chromebook can lock it. Documented limitation. |
 | Data exposure at rest | SQLite file created `0600` in a `0700` directory; hostnames only, never URLs; retention purge; delete-child cascades. Back-ups are the operator's responsibility. |
 | Transport | Plain HTTP on the LAN by design. For remote access, terminate TLS at a reverse proxy and set `CHPC_TRUST_PROXY=1` so rate limits key on the real client IP. |
 | Supply chain | Two runtime dependencies (`express`, `supertest` dev-only aside); `npm audit --omit=dev` clean; dev toolchain kept current (Vite 7, esbuild 0.25+). CI re-audits. |
@@ -200,3 +200,21 @@ Wi-Fi can reach the port.
 | D8 | Rich regex rules with reason, plain rules as fallback, fail-closed last | The child sees *why*; Chrome's 2 kB compiled-regex budget and future API changes cannot leave the browser open. |
 | D9 | Hostnames only, 90-day retention | Data minimisation for a child's browsing record; enough for budgets and a week's history. |
 | D10 | PIN chosen in the browser, unlocked by a one-time setup code | Non-technical parents never edit config files; possession of the server's log/disk is the proof of ownership, so the LAN cannot claim an unset console. |
+
+## Extension distribution
+
+The extension reaches the child's Chromebook through the **Chrome Web Store**,
+published *unlisted*: reachable by link, not by search. This is the only route
+onto a Family Link supervised account: ChromeOS blocks Developer mode and
+unpacked loading there by policy, parents have no toggle for it, and switching
+supervision off and on purges anything sideloaded in between. Installation is
+approved in person through Family Link; on first install the extension opens
+its pairing screen in a tab (`chrome.runtime.onInstalled`, reason `install`).
+
+Consumer Family Link offers no force-install or tamper lock. The extension's
+once-a-minute check-in (`GET /api/devices/:code`, which touches `last_seen`)
+doubles as the heartbeat: the console marks a device **not reporting** when
+`last_seen` is older than 30 minutes (`web/src/fmt.js` `quietDevices`). A
+managed Chromebook (Google Workspace or a school) can force-install the store
+item by ID; see the publishing guide. The `extension/` folder loaded unpacked
+remains the developer and end-to-end test path on unsupervised profiles.

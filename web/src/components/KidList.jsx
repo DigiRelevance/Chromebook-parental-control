@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { api } from "../api.js";
-import { statusPill, fmtMin, fmtLastSeen, usagePercent } from "../fmt.js";
+import { statusPill, fmtMin, fmtLastSeen, usagePercent, quietDevices } from "../fmt.js";
 
 export default function KidList({ go }) {
   const [kids, setKids] = useState(null);
@@ -67,6 +67,7 @@ export default function KidList({ go }) {
           const n = k.devices?.length || 0;
           const seen = latestSeen(k.devices);
           const pill = statusPill(k.status);
+          const quiet = quietDevices(k.devices);
           return (
             <div key={k.id} className="kid-row" role="link" tabIndex={0}
                  onClick={() => go("/kid/" + k.id)}
@@ -79,6 +80,11 @@ export default function KidList({ go }) {
                 </div>
               </div>
               <div className="row" style={{ alignItems: "center" }}>
+                {quiet.length > 0 && (
+                  <span className="pill warn" title="A paired Chromebook has not checked in for over 30 minutes. It may be off or offline, or the extension may have been disabled or removed.">
+                    {quiet.length === 1 && n === 1 ? "not reporting" : `${quiet.length} not reporting`}
+                  </span>
+                )}
                 {k.status && (
                   <>
                     <div className="meter" title={`Used ${fmtMin(k.status.usedTodayMin)} of ${k.status.dailyLimitMin != null ? fmtMin(k.status.dailyLimitMin) : "no limit"} today`}>

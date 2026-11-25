@@ -14,6 +14,16 @@ export function fmtLastSeen(iso) {
   if (s < 86400) return `${Math.floor(s / 3600)} h ago`;
   return `${Math.floor(s / 86400)} d ago`;
 }
+/** A paired device that has not checked in for this long is flagged in the UI. */
+export const QUIET_MS = 30 * 60 * 1000;
+/** Devices that have connected before but not within QUIET_MS. */
+export function quietDevices(devices, now = Date.now()) {
+  return (devices || []).filter((d) => {
+    if (!d.lastSeen) return false;
+    const t = Date.parse(d.lastSeen);
+    return !Number.isNaN(t) && now - t > QUIET_MS;
+  });
+}
 export function statusPill(status) {
   if (!status) return { text: "no data", cls: "mut" };
   if (!status.internetAllowed) return { text: "internet off", cls: "off" };
