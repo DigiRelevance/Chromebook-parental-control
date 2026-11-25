@@ -1,6 +1,6 @@
 # SCOUT case study — draft for digirelevance.com
 
-*Draft copy for a new case study under Writing, with a card on the Automation & Data
+*Draft 2. Copy for a new case study under Writing, with a card on the Automation & Data
 index. Not yet published. Open points for Nick are listed at the end.*
 
 ---
@@ -11,10 +11,11 @@ index. Not yet published. Open points for Nick are listed at the end.*
 
 **H1:** When "allowed" and "blocked" are not enough
 
-**Standfirst:** Most parental controls answer two questions: how long, and which
-sites. Children have found the gap between them. SCOUT adds the missing control,
-a time limit on an individual site, and runs alongside Google Family Link on the
-family Chromebook.
+**Standfirst:** I banned Roblox at home more than 18 months ago. My kids found
+other ways to play within weeks. Most parental controls limit total time and
+block sites; SCOUT adds the control I was missing, a time limit on an
+individual site, and works alongside Google Family Link on the family
+Chromebook.
 
 **Meta bar:**
 Sector: Family / consumer · Platform: Chrome and ChromeOS · Works with: Google Family Link ·
@@ -22,27 +23,41 @@ Stack: Chrome extension (Manifest V3), Node.js, SQLite, React · Hosting: self-h
 
 ---
 
-### The problem: one site, a thousand games
+### Where it started
 
-Parental controls were designed around a simple model. A site is either
-acceptable or it is not, and the device is either within its screen-time
-allowance or it is not. Google Family Link does both of those jobs well on a
-Chromebook, and it remains the foundation here.
+Roblox has been off our family's devices for over 18 months. The reasons are
+set out in [AI, children and the business of games](ARTICLE-URL): who children
+meet on these platforms, and how they are sold to.
 
-The trouble is the growing number of sites that are neither good nor bad. A
-single games portal gives a child access to thousands of games behind one web
-address. A video site holds both the revision clip the teacher recommended and
-six hours of everything else. Block the site and you remove something that is
-fine in moderation, and sometimes something school actually uses. Allow it and
-the whole of the day's screen time goes into it.
+Removing it did not end the matter. Kids aren't stupid. They found workarounds
+and other games quickly, and each one I closed off was replaced by another. It
+is a minefield and a constantly moving target.
 
-Children are also quicker than the block list. When one games site is blocked,
-another appears in the playground conversation by the end of the week. A parent
-maintaining a list of banned addresses is always one step behind.
+We talk to our children about online safety and about why some content is not
+suitable for their age. That matters, and it is not enough by itself. The
+mechanics of some of these games and sites are built to hold attention, and I
+could see it in their behaviour: the countdown to screen time starting hours
+ahead, the restlessness until the devices unlocked and, once they were playing,
+a point where reason no longer reached them.
 
-What parents are really asking for is a third answer: *yes, but not for long*.
+Timers and block lists were the only tools I had, and neither fitted the
+problem.
 
-### What was needed
+### The gap in the usual controls
+
+Parental controls are built around two questions: how long can the device be
+used, and which sites are allowed. Google Family Link answers both well on a
+Chromebook, and it remains the foundation of what we use.
+
+The difficulty is the growing number of sites that are neither good nor bad. A
+single games site gives a child a vast array of games behind one web address.
+A video site holds the revision clip a teacher recommended and hours of
+everything else. Block it and you remove something that is fine in moderation.
+Allow it and the whole day's screen time goes into it.
+
+What I wanted was a third answer: *yes, but not for long*.
+
+### What I needed
 
 - A time limit on a specific site, separate from the overall daily allowance.
 - A clear view of where the time is actually going, so a new site is noticed
@@ -50,9 +65,9 @@ What parents are really asking for is a third answer: *yes, but not for long*.
 - Rule changes that take effect in minutes, without touching the child's device.
 - No replacement for Family Link. It already handles the account, the device
   and app approvals; the new tool should fill the gap and nothing more.
-- The family's browsing data kept inside the home.
+- My family's browsing data kept inside the house.
 
-### The solution
+### What I built
 
 SCOUT is a small Chrome extension on the child's Chromebook, paired with a
 console the parent opens in their own browser. The parent sets the rules; the
@@ -72,7 +87,7 @@ extension enforces them inside Chrome and reports back what was used.
 
 **The controls a parent has, per child:**
 
-- **Per-site time limits.** Thirty minutes a day on the games portal, with
+- **Per-site time limits.** Thirty minutes a day on a games site, with
   everything else as normal. The limit covers the site's sub-addresses too.
 - **Daily limit** across all browsing.
 - **Allowed hours** by day of the week, and whole **off days** for exams or
@@ -85,17 +100,18 @@ extension enforces them inside Chrome and reports back what was used.
 
 The per-site limit is half of the answer. The other half is the usage view.
 For each child the console shows minutes used today, the sites those minutes
-went to, and the last seven days. A new games site does not need to be known
-about in advance; it shows up in the list by name with the time spent on it.
+went to, and the last seven days. I do not need to know about a new games site
+in advance; it shows up in the list by name, with the time spent on it.
 
-From there the parent has a choice that the usual controls do not offer. They
-can block it, or they can decide it is fine for twenty minutes and cap it. The
-change reaches the Chromebook within a minute. A *Test a decision* box in the
-console shows what the Chromebook would do with any site at that moment, so the
-rule can be checked before the child finds out the hard way.
+From there I have a choice the usual controls do not offer. I can block the
+site, or decide it is fine for twenty minutes a day and cap it. The change
+reaches the Chromebook within a minute. A *Test a decision* box in the console
+shows what the Chromebook would do with any site at that moment, so a rule can
+be checked before it is relied on.
 
-This turns an argument about a banned site into a conversation about a fair
-amount of time, which is an easier conversation to have.
+The lock page matters as much as the limit. It tells the child which rule
+applied and why, which fits how we try to handle this at home: the rules are
+explained, not hidden.
 
 ### Working with Family Link, not around it
 
@@ -124,7 +140,8 @@ No parental control is complete, and this one says so plainly.
   extension. SCOUT cannot prevent that, so it makes it visible: the console
   marks a Chromebook as *not reporting* once it has been silent for 30 minutes.
 
-It is a tool that supports supervision. It does not replace it.
+It is a tool that supports supervision and the conversations that go with it.
+It does not replace either.
 
 ### How it was built
 
@@ -152,26 +169,31 @@ close it.
 - **Subtitle:** Per-site time limits for the family Chromebook
 - **Description:** Most parental controls limit total time and block sites.
   SCOUT adds the control in between: a daily time limit on an individual site,
-  such as a games portal, working alongside Google Family Link.
+  such as a games site, working alongside Google Family Link.
 - **Tags:** Chrome extension · Family Link · Self-hosted · Open source
 
 ---
 
 ## Open points before publishing
 
-1. **No outcome figures or quotes are included**, because none were supplied.
-   Two places would benefit from real ones: a short quote from a parent after
-   the "Keeping up with a moving target" section, and a before/after figure
-   (for example, time on games sites per day) in the same section.
-2. **Origin story.** The draft describes the problem in general terms. If SCOUT
-   was built for your own household, a first-person opening paragraph saying so
-   would be stronger. I have not written one because I do not know the details.
-3. **Chrome Web Store status.** The draft says SCOUT is installed from the
+1. **Article link.** `ARTICLE-URL` in "Where it started" needs the published
+   address of *AI, children and the business of games*.
+2. **"Within weeks" in the standfirst.** You said they found workarounds
+   "quickly"; "within weeks" is my wording. Change it if it overstates.
+3. **Results.** No outcome figures are included because none were supplied. If
+   you can say what changed at home since SCOUT went in (for example, time on
+   games sites, or how the run-up to screen time now goes), it belongs at the
+   end of "Keeping up with a moving target".
+4. **Chrome Web Store status.** The draft says SCOUT is installed from the
    Chrome Web Store. The user guide still shows the store link as pending first
    approval. Confirm the listing is live before publishing, or soften the line.
-4. **Family Link comparison.** The draft says Family Link handles overall time
+5. **Family Link comparison.** The draft says Family Link handles overall time
    and site blocking but not a time limit on an individual website. Please
    confirm this still matches what you see in Family Link today.
-5. **CTA.** The button wording and link target are my suggestion; match them to
-   the other case studies.
-6. **Category.** "Family technology" would be a new filter pill on the index.
+6. **Roblox and Fortnite.** The draft names Roblox only as the starting point
+   and does not claim SCOUT blocks either game, because SCOUT controls Chrome
+   browsing and both are mainly played through apps. If your children's
+   workarounds ran through the browser, say so and I will make that explicit.
+7. **CTA and category.** The button wording, link target and the new "Family
+   technology" filter pill are suggestions; match them to the other case
+   studies.
