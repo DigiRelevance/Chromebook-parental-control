@@ -1,6 +1,6 @@
 {
   "name": "@chpc/server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Express + SQLite backend for Chromebook parental control. Serves the policy API, usage accounting, pairing and dashboard.",
   "type": "module",

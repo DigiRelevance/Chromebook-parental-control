@@ -1,6 +1,6 @@
 {
   "name": "chpc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Self-hosted parental control for family Chromebooks: policy core, Express API + SQLite, React console, enforcing Chrome extension.",
   "workspaces": [

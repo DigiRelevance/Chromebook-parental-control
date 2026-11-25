@@ -1,6 +1,6 @@
 {
   "name": "@chpc/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Pure policy engine for Chromebook parental control. Zero runtime deps; shared by server and Chrome extension.",
   "type": "module",
