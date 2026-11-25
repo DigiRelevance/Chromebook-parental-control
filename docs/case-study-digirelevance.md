@@ -26,7 +26,7 @@ Stack: Chrome extension (Manifest V3), Node.js, SQLite, React · Hosting: self-h
 ### Where it started
 
 Roblox has been off our family's devices for over 18 months. The reasons are
-set out in [AI, children and the business of games](https://www.linkedin.com/pulse/playing-intelligence-nick-marfleet-hvhlc/): who children
+set out in [Playing With Intelligence](https://www.linkedin.com/pulse/playing-intelligence-nick-marfleet-hvhlc/): who children
 meet on these platforms, and how they are sold to.
 
 Removing it did not end the matter. Kids aren't stupid. With the app gone, they
@@ -196,27 +196,24 @@ close it.
 
 ## Open points before publishing
 
-1. **Article title.** The link text is *AI, children and the business of games*,
-   the heading on the copy you sent. The LinkedIn address suggests the published
-   title may be "Playing Intelligence". Use whichever title the article carries.
-2. **"Within weeks" in the standfirst.** You said they found workarounds
+1. **"Within weeks" in the standfirst.** You said they found workarounds
    "quickly"; "within weeks" is my wording. Change it if it overstates.
-3. **Results.** No outcome figures are included because none were supplied. If
+2. **Results.** No outcome figures are included because none were supplied. If
    you can say what changed at home since SCOUT went in (for example, time on
    games sites, or how the run-up to screen time now goes), it belongs at the
    end of "Keeping up with a moving target".
-4. **Chrome Web Store status.** The draft says SCOUT is installed from the
+3. **Chrome Web Store status.** The draft says SCOUT is installed from the
    Chrome Web Store. The user guide still shows the store link as pending first
    approval. Confirm the listing is live before publishing, or soften the line.
-5. **Family Link comparison.** The two gaps in "The gap in the usual controls"
+4. **Family Link comparison.** The two gaps in "The gap in the usual controls"
    (no per-website time limit; Chrome time reported as one total) come from the
    research you supplied. I could not check them against Google's own
    documentation from this session, so give them a last look in your Family
    Link app before publishing, as Google changes these features.
-6. **Blocking other browsers and guest browsing.** The Family Link section says
+5. **Blocking other browsers and guest browsing.** The Family Link section says
    these are switched off so that browsing stays in Chrome. Confirm that is how
    your own Chromebooks are set up, since the case study is in the first
    person.
-7. **CTA and category.** The button wording, link target and the new "Family
+6. **CTA and category.** The button wording, link target and the new "Family
    technology" filter pill are suggestions; match them to the other case
    studies.
