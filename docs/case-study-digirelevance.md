@@ -29,9 +29,13 @@ Roblox has been off our family's devices for over 18 months. The reasons are
 set out in [AI, children and the business of games](ARTICLE-URL): who children
 meet on these platforms, and how they are sold to.
 
-Removing it did not end the matter. Kids aren't stupid. They found workarounds
-and other games quickly, and each one I closed off was replaced by another. It
-is a minefield and a constantly moving target.
+Removing it did not end the matter. Kids aren't stupid. With the app gone, they
+went to the browser, where games sites offer a vast array of games behind a
+single web address. Each one I blocked was replaced by another. It is a
+minefield and a constantly moving target.
+
+That is also why the answer had to live in Chrome. Family Link can remove an
+app. The workarounds were websites.
 
 We talk to our children about online safety and about why some content is not
 suitable for their age. That matters, and it is not enough by itself. The
@@ -190,10 +194,6 @@ close it.
 5. **Family Link comparison.** The draft says Family Link handles overall time
    and site blocking but not a time limit on an individual website. Please
    confirm this still matches what you see in Family Link today.
-6. **Roblox and Fortnite.** The draft names Roblox only as the starting point
-   and does not claim SCOUT blocks either game, because SCOUT controls Chrome
-   browsing and both are mainly played through apps. If your children's
-   workarounds ran through the browser, say so and I will make that explicit.
-7. **CTA and category.** The button wording, link target and the new "Family
+6. **CTA and category.** The button wording, link target and the new "Family
    technology" filter pill are suggestions; match them to the other case
    studies.
