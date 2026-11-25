@@ -57,8 +57,20 @@ SCOUT now starts by itself whenever the machine boots. Handy commands later:
 
 ### Option B — Docker (NAS, home server)
 
+On Linux, macOS or a NAS shell:
+
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/docker-compose.yml
+docker compose up -d
+docker compose logs chpc
+```
+
+On Windows, open PowerShell with Docker Desktop running. PowerShell's `curl`
+is an alias for `Invoke-WebRequest` and rejects the Linux flags (the error
+mentions `fsSLO`), so download the file this way:
+
+```powershell
+Invoke-WebRequest https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/docker-compose.yml -OutFile docker-compose.yml
 docker compose up -d
 docker compose logs chpc
 ```

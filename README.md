@@ -53,8 +53,19 @@ Manage it later with `sudo chpc status | logs | update | reset-pin`.
 
 **Prefer Docker?** No build step: the image is published to GitHub Container Registry.
 
+Linux, macOS, NAS shell:
+
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/docker-compose.yml
+docker compose up -d
+docker compose logs chpc        # shows the setup code
+```
+
+Windows (PowerShell, with Docker Desktop running). PowerShell's `curl` is an
+alias for a different command, so download the file like this instead:
+
+```powershell
+Invoke-WebRequest https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/docker-compose.yml -OutFile docker-compose.yml
 docker compose up -d
 docker compose logs chpc        # shows the setup code
 ```
