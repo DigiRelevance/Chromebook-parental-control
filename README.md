@@ -166,7 +166,8 @@ the server can live in either place.
 
 Remote hosting **must** use HTTPS (the PIN travels in a request header), needs
 `CHPC_TRUST_PROXY=1` so lockouts see real client addresses, and deserves a long
-PIN that is used nowhere else. The data still sits only on a server you
+PIN that is used nowhere else. The user guide's setup also turns on a
+firewall, runs a fixed version of the image and covers backups. The data still sits only on a server you
 control: SCOUT's publishers run nothing and receive nothing in either setup.
 Step-by-step: [docs/USER-GUIDE.md](docs/USER-GUIDE.md#using-scout-away-from-home).
 

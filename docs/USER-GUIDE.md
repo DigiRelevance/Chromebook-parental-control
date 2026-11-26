@@ -215,25 +215,71 @@ thing between the internet and your console. Use a long PIN that you use
 nowhere else. After ten wrong attempts from one address SCOUT locks that
 address out for 15 minutes.
 
-**Setup.**
+**Setup.** Allow about half an hour. You need a domain name you control.
 
-1. Rent the smallest Ubuntu server from any provider and note its IP address.
-2. Where your domain's DNS is managed, add an **A record** for a name such as
-   `scout.example.com` pointing at that IP address.
-3. Log in to the server and install Docker:
+1. **Rent a server.** The smallest Ubuntu server from any provider is enough.
+   Note its IP address and the login details the provider gives you.
+
+2. **Give it a name.** Where your domain's DNS is managed, **add a new A
+   record** for a name of its own, such as `scout`, pointing at the server's IP
+   address. That makes `scout.example.com`.
+
+   Add a record; do not edit the one your website already uses, or your
+   website will follow it to the new server. Some providers park a placeholder
+   page on a new name and warn that its records will be disabled when you add
+   yours. That is fine as long as every record listed is for the new name
+   (`scout`) and none is for the bare domain. DNS changes can take up to an
+   hour to spread.
+
+3. **Log in to the server** from a terminal on your own computer, using the
+   server's IP address:
+
+   ```bash
+   ssh root@SERVER-IP
+   ```
+
+   If your provider gave you a user other than `root`, use that name and put
+   `sudo` in front of the commands below.
+
+4. **Turn on the firewall**, allowing only remote login and web traffic. Run
+   these in this order; the first one keeps your own login working.
+
+   ```bash
+   ufw allow OpenSSH
+   ```
+
+   ```bash
+   ufw allow 80,443/tcp
+   ```
+
+   ```bash
+   ufw enable
+   ```
+
+   `ufw status` should then show OpenSSH and 80,443/tcp allowed. If your
+   provider has a firewall of its own in its control panel, allow ports 80 and
+   443 there too.
+
+5. **Install Docker:**
 
    ```bash
    curl -fsSL https://get.docker.com | sh
    ```
 
-4. Create a folder and a file called `docker-compose.yml` in it with the
-   following, replacing `scout.example.com` with your own name. The second
-   service, Caddy, provides HTTPS and fetches its certificate automatically.
+6. **Create the setup file.** Make a folder and open a new file in it:
+
+   ```bash
+   mkdir scout && cd scout && nano docker-compose.yml
+   ```
+
+   Paste in the following, replacing `scout.example.com` with your own name,
+   then save (Ctrl+O, Enter) and exit (Ctrl+X). The second service, Caddy,
+   provides HTTPS: it fetches a free certificate by itself and renews it.
 
    ```yaml
    services:
      chpc:
-       image: ghcr.io/digirelevance/chromebook-parental-control:latest
+       image: ghcr.io/digirelevance/chromebook-parental-control:1.0.1
        environment:
          CHPC_TRUST_PROXY: "1"
        volumes:
@@ -252,10 +298,15 @@ address out for 15 minutes.
 
    volumes:
      chpc-data:
+       name: chpc-data
      caddy-data:
    ```
 
-5. Start it and read the setup code:
+   The image line names a fixed version, so the server only changes when you
+   decide to update it. Use the newest version number shown on the project's
+   Releases page.
+
+7. **Start it and read the setup code:**
 
    ```bash
    docker compose up -d
@@ -265,21 +316,78 @@ address out for 15 minutes.
    docker compose logs chpc
    ```
 
-6. Open `https://scout.example.com`, enter the setup code and choose your PIN.
-   Add your children and rules as usual.
-7. Pair each Chromebook using `https://scout.example.com` as the console
+8. **Choose your PIN.** Open `https://scout.example.com`, enter the setup code
+   and choose your PIN. If the page does not load, wait a few minutes for the
+   DNS change, then look at `docker compose logs caddy`, which says whether
+   the certificate was issued. Add your children and rules as usual.
+
+9. **Pair each Chromebook** using `https://scout.example.com` as the console
    address. A Chromebook that was paired with a home address must be unpaired
    and paired again with the new one.
+
+10. **Check it from another network.** Put the Chromebook on a phone hotspot,
+    change a rule in the console, and confirm it arrives within a minute.
 
 **Rules for remote hosting.**
 
 - Always `https://`. Never open port 4100 to the internet directly: the PIN
-  would travel unprotected.
+  would travel unprotected. The setup above does not publish that port.
 - Keep `CHPC_TRUST_PROXY: "1"` as shown, so lockouts apply to the real visitor
   and not to the proxy.
-- Keep the server updated: `docker compose pull && docker compose up -d`.
-- Moving an existing home installation? Copy the database file across before
-  first start, or simply set the rules up again.
+- Use a long PIN that you use nowhere else. It is the only lock on the
+  console.
+
+**Looking after it.**
+
+- **Updating.** Change the version number on the `image:` line to the new
+  release, then:
+
+  ```bash
+  docker compose pull && docker compose up -d
+  ```
+
+  Rules, children, pairings and usage are kept.
+
+- **Backing up.** Everything lives in one Docker volume, `chpc-data`. Stop
+  SCOUT for a moment so the copy is complete, save the volume to a file, and
+  start it again:
+
+  ```bash
+  docker compose stop chpc
+  ```
+
+  ```bash
+  docker run --rm -v chpc-data:/data -v "$PWD":/backup alpine tar czf /backup/scout-backup.tgz -C /data .
+  ```
+
+  ```bash
+  docker compose start chpc
+  ```
+
+  Copy `scout-backup.tgz` off the server. It contains your children's names
+  and browsing record, so keep it somewhere private.
+
+- **Restoring** onto a new server: follow steps 1 to 6, copy
+  `scout-backup.tgz` into the folder, then put it in place **before** the
+  first start:
+
+  ```bash
+  docker run --rm -v chpc-data:/data -v "$PWD":/backup alpine tar xzf /backup/scout-backup.tgz -C /data
+  ```
+
+  ```bash
+  docker compose up -d
+  ```
+
+  The console should open with your existing PIN and rules; no setup code is
+  needed. Try a restore once before you rely on your backups.
+
+- **Knowing it is up.** `https://scout.example.com/api/health` answers
+  whenever the server is running. Any free uptime-monitoring service can
+  watch that address and tell you if it stops answering.
+
+- **Moving an existing home installation?** Take a backup of the home
+  database and restore it as above, or simply set the rules up again.
 
 Already have a machine at home and prefer not to rent one? A tunnel or reverse
 proxy that gives the home server an HTTPS address works the same way; the

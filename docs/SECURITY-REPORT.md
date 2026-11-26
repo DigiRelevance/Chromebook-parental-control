@@ -238,7 +238,15 @@ from home"). It changes the exposure, not the code:
 | Pairing-code guessing from the internet. | Unchanged: CSPRNG codes, unknown-code lookups limited per address. |
 
 Not done: per-guardian accounts, a second factor, or persistent rate limits.
-They remain the recommended next steps for anyone hosting remotely. The
-documented Caddy setup has not been exercised by the automated suite.
+They remain the recommended next steps for anyone hosting remotely.
+
+**What has been tried.** The documented setup (Ubuntu, `ufw` allowing only
+SSH, 80 and 443, Docker, the 1.0.1 image behind Caddy with a certificate
+issued automatically) was built by hand on a rented server on 2026-11-26. The
+console was reached over HTTPS, a browser was paired through the HTTPS
+address, a blocked site and a per-site time limit were enforced, and usage
+appeared in the console. Not yet tried on that server: the PIN lockout seen
+through the proxy, a restart with data kept, and the backup and restore
+commands in the user guide. None of it is covered by the automated suite.
 
 Total automated checks: 133, of which 40 are security and hygiene assertions.
