@@ -23,7 +23,7 @@ case "${1:-status}" in
   logs)      journalctl -u "$SERVICE" -f --no-pager ;;
   restart)   systemctl restart "$SERVICE" && echo "restarted" ;;
   update)
-    curl -fsSL "https://raw.githubusercontent.com/${CHPC_REPO:-marfleetn/Chromebook-parental-control}/${CHPC_REF:-main}/install.sh" | bash
+    curl -fsSL "https://raw.githubusercontent.com/${CHPC_REPO:-DigiRelevance/Chromebook-parental-control}/${CHPC_REF:-main}/install.sh" | bash
     ;;
   reset-pin)
     (cd "$APP_DIR" && node server/src/cli.js reset-pin)

@@ -3,15 +3,15 @@
 # Linux container. Installs Node 22 if needed, downloads and builds SCOUT, sets
 # it up as an always-on service, and prints the console address + setup code.
 #
-#   curl -fsSL https://raw.githubusercontent.com/marfleetn/Chromebook-parental-control/main/install.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/DigiRelevance/Chromebook-parental-control/main/install.sh | sudo bash
 #
 # Re-running upgrades in place and keeps your data. Environment overrides:
-#   CHPC_REPO  (default marfleetn/Chromebook-parental-control)
+#   CHPC_REPO  (default DigiRelevance/Chromebook-parental-control)
 #   CHPC_REF   (default main — a branch, tag or commit)
 #   CHPC_PORT  (default 4100)
 set -euo pipefail
 
-CHPC_REPO="${CHPC_REPO:-marfleetn/Chromebook-parental-control}"
+CHPC_REPO="${CHPC_REPO:-DigiRelevance/Chromebook-parental-control}"
 CHPC_REF="${CHPC_REF:-main}"
 CHPC_PORT="${CHPC_PORT:-4100}"
 APP_DIR=/opt/chpc

@@ -39,7 +39,7 @@ const tiles = {
         <div><div style="${serif}font-size:168px;line-height:.9;letter-spacing:-.02em">SCOUT</div>
         <div style="${serif}font-weight:400;font-size:44px;line-height:1.2;margin-top:18px">Your rules, kept at home.</div></div>
       </div>
-      <div style="font-family:'IBM Plex Mono',Menlo,monospace;font-size:20px;color:${T.inkSoft}">marfleetn/Chromebook-parental-control</div>
+      <div style="font-family:'IBM Plex Mono',Menlo,monospace;font-size:20px;color:${T.inkSoft}">DigiRelevance/Chromebook-parental-control</div>
     </div>`)],
   'brand/store/marquee.png': [1400, 560, page(1400, 560, `
     <div style="box-sizing:border-box;width:1400px;height:560px;padding:72px 96px;display:flex;align-items:center;justify-content:space-between;gap:72px">

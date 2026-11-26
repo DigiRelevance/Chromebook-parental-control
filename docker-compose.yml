@@ -6,7 +6,7 @@
 # To build from source instead:  docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 services:
   chpc:
-    image: ghcr.io/marfleetn/chromebook-parental-control:latest
+    image: ghcr.io/digirelevance/chromebook-parental-control:latest
     container_name: chpc
     ports:
       - "4100:4100"

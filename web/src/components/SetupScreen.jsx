@@ -4,7 +4,7 @@ import { api } from "../api.js";
 
 const CODE_RE = /^[A-Z]{8}$/;
 // The README's Disclaimer section, which restates the MIT licence in plain language.
-const TERMS_URL = "https://github.com/marfleetn/Chromebook-parental-control#disclaimer";
+const TERMS_URL = "https://github.com/DigiRelevance/Chromebook-parental-control#disclaimer";
 
 /**
  * First-run screen: the server has no guardian PIN yet. The parent enters the

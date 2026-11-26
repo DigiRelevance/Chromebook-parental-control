@@ -2,7 +2,7 @@
 
 *Effective 25 November 2026. Applies to the SCOUT Chrome extension and the
 SCOUT console and server published at
-<https://github.com/marfleetn/Chromebook-parental-control>.*
+<https://github.com/DigiRelevance/Chromebook-parental-control>.*
 
 **In one paragraph.** SCOUT is self-hosted. The extension on a child's
 Chromebook talks to exactly one place: the server address a parent typed in
@@ -93,4 +93,4 @@ about a particular family's data go to that family's parent, not to us.
 This policy lives in the SCOUT repository; every change is recorded in its
 history with a date. Questions or concerns can be raised through the
 repository's issue tracker at
-<https://github.com/marfleetn/Chromebook-parental-control/issues>.
+<https://github.com/DigiRelevance/Chromebook-parental-control/issues>.

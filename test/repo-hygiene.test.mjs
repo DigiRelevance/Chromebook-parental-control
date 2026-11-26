@@ -121,7 +121,7 @@ test('HYG docker: image and compose follow least privilege', () => {
   const compose = read('docker-compose.yml');
   for (const must of ['read_only: true', 'no-new-privileges:true', 'cap_drop:', '- ALL', 'restart: unless-stopped']) assert.ok(compose.includes(must), 'compose lacks ' + must);
   for (const never of ['privileged: true', 'network_mode: host', '/var/run/docker.sock', 'CHPC_ALLOW_NO_PIN']) assert.ok(!compose.includes(never), 'compose contains ' + never);
-  assert.match(compose, /image: ghcr\.io\/marfleetn\/chromebook-parental-control:/);
+  assert.match(compose, /image: ghcr\.io\/digirelevance\/chromebook-parental-control:/);
 });
 
 test('HYG installer: service unit is hardened and the data directory is private', () => {
