@@ -2,6 +2,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import { api } from "../api.js";
 import { statusPill, fmtMin, fmtLastSeen, usagePercent, WEEKDAYS, quietDevices } from "../fmt.js";
 
+// The unlisted Chrome Web Store listing: reachable by link, not by search.
+const STORE_URL = "https://chromewebstore.google.com/detail/pdpfmaggficacmfobdjechiidlpljoao";
+
 const MODES = [
   { id: "unrestricted", label: "Everything allowed (except blocked sites)" },
   { id: "denylist", label: "Everything allowed (except blocked sites)" },
@@ -347,7 +350,7 @@ function DevicesTab({ kidId, onChanged }) {
         <h3>Pair a new Chromebook</h3>
         <ol style={{ fontSize: ".9rem", color: "var(--ink-soft)", paddingLeft: 20, marginTop: 0 }}>
           <li>Give the device a name and click <strong>Generate code</strong>.</li>
-          <li>On the Chromebook, signed in as the child, install SCOUT from the Chrome Web Store (approve it through Family Link), open it and enter this console&apos;s address and the code.</li>
+          <li>On the Chromebook, signed in as the child, install SCOUT from the <a href={STORE_URL} target="_blank" rel="noopener noreferrer">Chrome Web Store</a> (approve it through Family Link); the pairing screen opens by itself. Enter this console&apos;s address and the code.</li>
           <li>The code is that device&apos;s key — anyone who has it can read this child&apos;s rules. Unpair to revoke it.</li>
         </ol>
         <div className="row" style={{ marginTop: 8 }}>
