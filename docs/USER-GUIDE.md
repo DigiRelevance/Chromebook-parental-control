@@ -141,8 +141,8 @@ device the console locks that device out for 15 minutes.
    Web → Advanced settings* and make sure *Permissions for sites, apps and
    extensions* is set so the child can ask you to approve installations.
 3. On the Chromebook, signed in as the child, open the SCOUT listing on the
-   Chrome Web Store: `https://chromewebstore.google.com/detail/scout/<extension-id>` (the link is added here after the first
-   store approval) and click **Add to Chrome**. Family Link asks for a parent:
+   Chrome Web Store: <https://chromewebstore.google.com/detail/pdpfmaggficacmfobdjechiidlpljoao> (unlisted:
+   it is reachable by this link, not by searching the store) and click **Add to Chrome**. Family Link asks for a parent:
    choose **Ask in person**, enter your Google password, and the extension
    installs. A pairing screen opens by itself.
 4. On that screen enter the **console address** (`http://SERVER-IP:4100`) and

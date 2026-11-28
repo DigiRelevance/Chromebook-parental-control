@@ -21,6 +21,7 @@
 <br>
 [![extension](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FDigiRelevance%2FChromebook-parental-control%2Fbadges%2Fextension.json&logo=googlechrome&logoColor=white)](extension/manifest.json)
 [![store readiness](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FDigiRelevance%2FChromebook-parental-control%2Fbadges%2Fstore.json&logo=googlechrome&logoColor=white)](test/store-policy.test.mjs)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/pdpfmaggficacmfobdjechiidlpljoao?label=Chrome%20Web%20Store&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/pdpfmaggficacmfobdjechiidlpljoao)
 [![Manifest V3](https://img.shields.io/badge/Chrome%20extension-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3)
 [![Chrome ≥ 116](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FDigiRelevance%2FChromebook-parental-control%2Fmain%2Fextension%2Fmanifest.json&query=%24.minimum_chrome_version&label=Chrome&prefix=%E2%89%A5%20&color=4285F4&logo=googlechrome&logoColor=white)](extension/manifest.json)
 [![Node ≥ 22](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FDigiRelevance%2FChromebook-parental-control%2Fmain%2Fpackage.json&query=%24.engines.node&label=Node&color=339933&logo=nodedotjs&logoColor=white)](package.json)
@@ -72,9 +73,10 @@ docker compose up -d
 docker compose logs chpc        # shows the setup code
 ```
 
-Then, on each child's Chromebook, install the SCOUT extension from the Chrome
-Web Store (a Family Link parent approves it on the spot) and pair it with a
-code from the console. Full walkthrough: [docs/USER-GUIDE.md](docs/USER-GUIDE.md).
+Then, on each child's Chromebook, install the SCOUT extension from the
+[Chrome Web Store](https://chromewebstore.google.com/detail/pdpfmaggficacmfobdjechiidlpljoao) (an unlisted
+listing: reachable by that link, not by search; a Family Link parent approves
+it on the spot) and pair it with a code from the console. Full walkthrough: [docs/USER-GUIDE.md](docs/USER-GUIDE.md).
 
 ## Packages
 
